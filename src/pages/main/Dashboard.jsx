@@ -359,7 +359,7 @@ const Dashboard = () => {
                 </tr>
                 <tr>
                   <td className="order-id">#ORD-003</td>
-                  <td className="customer-name">Muhammad Fikri</td>
+                  <td className="customer-name">Muhammad Andi</td>
                   <td className="order-date">Oct 23, 2025</td>
                   <td className="order-amount">$89.50</td>
                   <td><span className="status-badge completed">Completed</span></td>
