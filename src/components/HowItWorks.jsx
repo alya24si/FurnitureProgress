@@ -5,18 +5,18 @@ const HowItWorks = () => {
   const steps = [
     {
       icon: <FiLock />,
-      title: '1. Purchase Securely',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+      title: '1. Pilih Furniture Favorit',
+      description: 'Temukan berbagai pilihan furniture modern dengan kualitas terbaik untuk rumah Anda.'
     },
     {
       icon: <FiBox />,
-      title: '2. Ships From Warehouse',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+      title: '2. Pengiriman Cepat & Aman',
+      description: 'Pesanan dikemas dengan aman dan dikirim langsung dari gudang kami di Pekanbaru.'
     },
     {
       icon: <FiHome />,
-      title: '3. Style Your Space',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+      title: '3. Percantik Ruangan Anda',
+      description: 'Ciptakan suasana rumah yang nyaman dan elegan dengan furniture pilihan terbaik.'
     }
   ];
 
@@ -25,7 +25,7 @@ const HowItWorks = () => {
       <div className="container text-center">
         <h2 className="section-title">How It Works</h2>
         <p className="section-subtitle">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-        
+
         <div style={styles.grid}>
           {steps.map((step, index) => (
             <div key={index} style={styles.card}>

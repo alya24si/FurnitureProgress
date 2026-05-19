@@ -52,7 +52,7 @@ function SalesReport() {
       {/* Summary Cards */}
       <div className="sr-stats">
         <StatCard
-          label="Total Revenue"
+          label="Total "
           value={formatRupiah(stats.revenue)}
           icon={<FiDollarSign />}
           color="revenue"
@@ -84,12 +84,12 @@ function SalesReport() {
         {/* Header Section */}
         <div className="table-header-section">
           <div>
-            <h1 className="table-main-title">Sales Report</h1>
+            <h1 className="table-main-title">Sales </h1>
             <p className="table-sub-title">
-              Ringkasan transaksi pembelian toko furniture
+              Transaksi pembelian toko furniture alya
             </p>
           </div>
-          <button className="btn-download-all-top">Download report</button>
+          <button className="btn-download-all-top">Dapatkan</button>
         </div>
 
         {/* Toolbar Section */}
@@ -158,7 +158,7 @@ function SalesReport() {
               {filtered.length === 0 && (
                 <tr>
                   <td colSpan={6} className="empty-state">
-                    Tidak ada transaksi yang cocok.
+                    Data transaksi tidak ditemukan!!
                   </td>
                 </tr>
               )}

@@ -7,12 +7,25 @@ const Hero = () => {
     <HeroSection style={styles.hero}>
       <Container style={styles.container}>
         <div style={styles.card}>
-          <p style={styles.subtitle}>New Arrival</p>
-          <h1 style={styles.title}>Discover Our <br/> New Collection</h1>
+          <p style={styles.subtitle}>Koleksi Terbaru</p>
+
+          <h1 style={styles.title}>
+            Temukan Furniture <br /> Impian Rumah Anda
+          </h1>
+
           <p style={styles.description}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis.
+            Hadir dengan desain modern, minimalis, dan elegan
+            untuk mempercantik ruang tamu, kamar tidur, hingga
+            ruang kerja Anda dengan kualitas terbaik.
           </p>
-          <Button variant="primary" className="btn btn-primary" style={styles.btn}>BUY NOW</Button>
+
+          <Button
+            variant="primary"
+            className="btn btn-primary"
+            style={styles.btn}
+          >
+            BELI SEKARANG
+          </Button>
         </div>
       </Container>
     </HeroSection>
