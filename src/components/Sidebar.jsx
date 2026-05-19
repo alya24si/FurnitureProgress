@@ -171,7 +171,7 @@ const Sidebar = () => {
       <style>{sidebarStyles}</style>
       <SidebarReusable className="sidebar">
         <div className="sidebar-logo">
-          <img src="/assets/images/image.png" alt="Logo" />
+          <img src="/assets/images/gambarPetir.jpeg" alt="Logo" />
         </div>
 
         <nav className="sidebar-nav">
