@@ -19,6 +19,9 @@ const ProductDetail = React.lazy(() => import('./pages/main/ProductDetail'));
 const SalesReport = React.lazy(() => import('./pages/main/SalesReport'));
 const OrderDetail = React.lazy(() => import('./pages/main/OrderDetail'));
 const NotFound = React.lazy(() => import('./pages/NotFound'));
+const FavoriteProducts = React.lazy(() => import('./pages/main/FavoriteProducts'));
+const About = React.lazy(() => import('./pages/main/About'));
+const Contact = React.lazy(() => import('./pages/main/Contact'));
 
 function App() {
   return (
@@ -28,13 +31,15 @@ function App() {
           <Routes>
             <Route path="/" element={<MainLayout />}>
               <Route index element={<Home />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
             </Route>
+
 
             <Route element={<AuthLayout />}>
               <Route path="/login" element={<Login />} />
             </Route>
 
-            {/* Admin area — nebeng AdminLayout (Sidebar + top header) */}
             <Route element={<AdminLayout />}>
               <Route path="/admin/dashboard" element={<Dashboard />} />
               <Route path="/products" element={<Produk />} />
@@ -44,11 +49,28 @@ function App() {
               <Route path="/customers/:id" element={<CustomerDetail />} />
               <Route path="/users" element={<Users />} />
               <Route path="/users/:abc" element={<UserDetail />} />
+              <Route path="/favorite-products" element={<FavoriteProducts />} />
+
+
+
             </Route>
 
-            {/* Catch-all 404 */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+
+          {/* Floating WhatsApp */}
+          <a
+            href="https://wa.me/62895373847425"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="whatsapp-float"
+          >
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/733/733585.png"
+              alt="WhatsApp"
+            />
+          </a>
+
         </Suspense>
       </BrowserRouter>
     </ErrorBoundary>

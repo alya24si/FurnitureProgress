@@ -15,7 +15,7 @@ function Produk() {
 
   useEffect(() => {
     axios
-      .get('https://dummyjson.com/products?limit=30')
+      .get('https://dummyjson.com/products/category/furniture?limit=30')
       .then((response) => {
         if (response.status !== 200) {
           setError(response.message);
@@ -150,6 +150,49 @@ function Produk() {
 function ProductCard({ item }) {
   const [hovered, setHovered] = useState(false);
 
+  // Translate nama furniture ke Bahasa Indonesia
+  const translateFurniture = (title) => {
+    switch (title) {
+      case "Annibale Colombo Bed":
+        return "Tempat Tidur Annibale Colombo";
+
+      case "Annibale Colombo Sofa":
+        return "Sofa Annibale Colombo";
+
+      case "Bedside Table African Cherry":
+        return "Meja Samping Tempat Tidur Kayu Ceri Afrika";
+
+      case "Knoll Saarinen Executive Conference Chair":
+        return "Kursi Konferensi Knoll Saarinen";
+
+      case "Wooden Bathroom Sink With Mirror":
+        return "Wastafel Kayu dengan Cermin";
+
+      default:
+        return title;
+    }
+  };
+
+  const translatedTitle = translateFurniture(item.title);
+
+  // Translate deskripsi ke Bahasa Indonesia
+  const translateDescription = (description) => {
+    switch (description) {
+      case "The Annibale Colombo Bed is a luxurious and elegant bed frame, crafted with high-quality materials for a comfortable and stylish bedroom.":
+        return "Tempat tidur Annibale Colombo adalah tempat tidur mewah dan elegan yang dibuat dari bahan berkualitas tinggi untuk kamar tidur yang nyaman dan stylish.";
+
+      case "The Annibale Colombo Sofa is a sophisticated and comfortable seating option, featuring exquisite design and premium upholstery for your living room.":
+        return "Sofa Annibale Colombo adalah sofa nyaman dengan desain mewah dan bahan premium yang cocok untuk ruang tamu Anda.";
+
+      case "The Bedside Table African Cherry is a stylish and functional addition to your bedroom, made from high-quality African Cherry wood.":
+        return "Meja samping tempat tidur kayu ceri Afrika adalah furnitur stylish dan fungsional yang terbuat dari kayu berkualitas tinggi.";
+
+      default:
+        return description;
+    }
+  };
+
+  const translatedDescription = translateDescription(item.description);
   // Mock avatars based on item data to mimic the image
   const avatars = [
     `https://ui-avatars.com/api/?name=${item.title.charAt(0)}&background=random&color=fff&size=24`,
@@ -170,66 +213,85 @@ function ProductCard({ item }) {
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-      {/* Top Header */}
-      <div style={styles.cwHeader}>
-        <div style={styles.cwIconBox}>
-          <img src={item.thumbnail} alt={item.title} style={styles.cwIconImg} loading="lazy" />
-        </div>
-        <div style={styles.cwTitleArea}>
-          <h3 style={styles.cwTitle}>{item.title}</h3>
-          <div style={styles.cwAvatars}>
-            {avatars.map((url, idx) => (
-              <img key={idx} src={url} alt="avatar" style={{
-                ...styles.cwAvatarImg,
-                marginLeft: idx === 0 ? 0 : '-6px',
-                zIndex: 3 - idx
-              }} />
-            ))}
-            <div style={{
-               ...styles.cwAvatarImg,
-               marginLeft: '-6px',
-               zIndex: 0,
-               background: '#f2f4f7',
-               color: '#667085',
-               display: 'flex',
-               alignItems: 'center',
-               justifyContent: 'center',
-               fontSize: '8px',
-               fontWeight: 'bold'
-            }}>
-               +{Math.floor(item.rating * 10)}
+        {/* Top Header */}
+        <div style={styles.cwHeader}>
+          <div style={styles.cwIconBox}>
+            <img
+              src={item.thumbnail}
+              alt={item.title}
+              style={styles.cwIconImg}
+              loading="lazy"
+            />
+          </div>
+
+          <div style={styles.cwTitleArea}>
+            {/* Nama produk sudah diterjemahkan */}
+            <h3 style={styles.cwTitle}>{translatedTitle}</h3>
+
+            <div style={styles.cwAvatars}>
+              {avatars.map((url, idx) => (
+                <img
+                  key={idx}
+                  src={url}
+                  alt="avatar"
+                  style={{
+                    ...styles.cwAvatarImg,
+                    marginLeft: idx === 0 ? 0 : '-6px',
+                    zIndex: 3 - idx
+                  }}
+                />
+              ))}
+
+              <div
+                style={{
+                  ...styles.cwAvatarImg,
+                  marginLeft: '-6px',
+                  zIndex: 0,
+                  background: '#f2f4f7',
+                  color: '#667085',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '8px',
+                  fontWeight: 'bold'
+                }}
+              >
+                +{Math.floor(item.rating * 10)}
+              </div>
             </div>
           </div>
-        </div>
-        <div style={styles.cwMenu}>
-          <FiMoreVertical size={16} />
-        </div>
-      </div>
 
-      {/* Description */}
-      <p style={styles.cwDesc}>
-        {item.description}
-      </p>
-
-      {/* Divider */}
-      <hr style={styles.cwDivider} />
-
-      {/* Footer stats */}
-      <div style={styles.cwFooter}>
-        <div style={styles.cwStatLeft}>
-          <span style={styles.cwVal}>{item.stock}</span>
-          <span style={styles.cwLbl}>In Stock</span>
+          <div style={styles.cwMenu}>
+            <FiMoreVertical size={16} />
+          </div>
         </div>
-        <div style={styles.cwStatRight}>
-          <span style={styles.cwVal}>${item.price}</span>
-          <span style={styles.cwLbl}>Price</span>
+
+        {/* Description */}
+        <p style={styles.cwDesc}>
+          {translatedDescription}
+        </p>
+
+        {/* Divider */}
+        <hr style={styles.cwDivider} />
+
+        {/* Footer stats */}
+        <div style={styles.cwFooter}>
+          <div style={styles.cwStatLeft}>
+            <span style={styles.cwVal}>{item.stock}</span>
+            <span style={styles.cwLbl}>In Stock</span>
+          </div>
+
+          <div style={styles.cwStatRight}>
+            <span style={styles.cwVal}>${item.price}</span>
+            <span style={styles.cwLbl}>Price</span>
+          </div>
         </div>
-      </div>
+
+        
       </Card>
     </Link>
   );
 }
-
 /* ─── Styles (khusus konten, tidak ada page shell) ─── */
 const styles = {
   titleRow: {

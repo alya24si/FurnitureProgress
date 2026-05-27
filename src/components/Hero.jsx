@@ -36,7 +36,7 @@ const styles = {
   hero: {
     height: '80vh',
     minHeight: '600px',
-    backgroundImage: `url('/assets/images/hero.png')`,
+    backgroundImage: `url('/assets/images/living_room.png')`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     position: 'relative',

@@ -1,3 +1,4 @@
+import { GiSelfLove } from "react-icons/gi"; 
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   FiGrid,
@@ -171,7 +172,7 @@ const Sidebar = () => {
       <style>{sidebarStyles}</style>
       <SidebarReusable className="sidebar">
         <div className="sidebar-logo">
-          <img src="/assets/images/gambarPetir.jpeg" alt="Logo" />
+          <img src="/assets/images/logofix.jpeg" alt="Logo" />
         </div>
 
         <nav className="sidebar-nav">
@@ -194,6 +195,11 @@ const Sidebar = () => {
             <FiUsers className="nav-icon" />
             <span>Customer</span>
           </NavLink>
+
+          <NavLink to="/favorite-products" className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}>
+            <GiSelfLove className="nav-icon" />
+            <span>Diminati</span>
+          </NavLink>
           
           <NavItem
             onClick={() => navigate('/sales-report')}
@@ -208,13 +214,13 @@ const Sidebar = () => {
         <div className="sidebar-footer">
           <div className="profile-widget">
             <img 
-              src="https://ui-avatars.com/api/?name=Admin+User&background=f9fafb&color=101828" 
+              src="https://ui-avatars.com/api/?name=Alya+Deka&background=f9fafb&color=101828" 
               alt="Admin" 
               className="profile-avatar" 
             />
             <div className="profile-info">
-              <h4 className="profile-name">Admin User</h4>
-              <p className="profile-email">admin@furniture.com</p>
+              <h4 className="profile-name">Alya Deka</h4>
+              <p className="profile-email">alya@furniture.com</p>
             </div>
             <button 
               className="profile-menu-btn" 

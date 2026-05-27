@@ -16,20 +16,30 @@ const HeaderSection = () => {
             <h2>Furniture</h2>
           </Link>
         </div>
-        
+
         <nav style={styles.nav}>
           <ul style={styles.navList}>
-            <li><Link to="/" style={{...styles.navLink, fontWeight: 600}}>Home</Link></li>
+            <li><Link to="/" style={{ ...styles.navLink, fontWeight: 600 }}>Home</Link></li>
             <li><Link to="/products" style={styles.navLink}>Shop</Link></li>
-            <li><a href="#" style={styles.navLink}>About</a></li>
-            <li><a href="#" style={styles.navLink}>Contact</a></li>
+            <li>
+              <Link to="/about" style={styles.navLink}>
+                About
+              </Link>
+            </li>
+
+            <li>
+              <Link to="/contact" style={styles.navLink}>
+                Contact
+              </Link>
+            </li>
           </ul>
         </nav>
 
         <div style={styles.icons}>
-          <a href="#" style={styles.icon}><FiUser /></a>
-          <a href="#" style={styles.icon}><FiSearch /></a>
-          <a href="#" style={styles.icon}><FiHeart /></a>
+
+          <Link to="/favorite-products" style={styles.icon}>
+            <FiHeart />
+          </Link>
           <div style={{ position: 'relative' }}>
             <button
               type="button"

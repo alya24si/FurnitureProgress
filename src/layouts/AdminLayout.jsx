@@ -162,13 +162,13 @@ const AdminLayout = () => {
               </button>
               <div className="admin-profile">
                 <img
-                  src="https://ui-avatars.com/api/?name=Admin+User&background=054C73&color=fff"
+                  src="https://ui-avatars.com/api/?name=Alya+Deka&background=054C73&color=fff"
                   alt="Admin"
                   className="admin-avatar"
                 />
                 <div>
-                  <p className="admin-name">Admin User</p>
-                  <p className="admin-role">Super Admin</p>
+                  <p className="admin-name">Admin</p>
+                  <p className="admin-role">Alya</p>
                 </div>
               </div>
             </div>

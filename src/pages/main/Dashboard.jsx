@@ -2,6 +2,7 @@ import { FiMoreVertical, FiTrendingUp, FiShoppingBag, FiUsers, FiDollarSign } fr
 import Card from '../../Reusable/Card';
 import Table from '../../Reusable/Table';
 
+
 const dashboardStyles = `
   /* Stats Cards Grid */
   .stats-grid {
