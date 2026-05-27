@@ -1,7 +1,8 @@
 import { FiMoreVertical, FiTrendingUp, FiShoppingBag, FiUsers, FiDollarSign } from 'react-icons/fi';
 import Card from '../../Reusable/Card';
 import Table from '../../Reusable/Table';
-
+import { Tabs, TabsList, TabsTrigger, } from "@/components/ui/tabs";
+import {Dialog,DialogContent,DialogHeader,DialogTitle,DialogDescription,DialogTrigger,} from "@/components/ui/dialog";
 
 const dashboardStyles = `
   /* Stats Cards Grid */
@@ -267,6 +268,9 @@ const dashboardStyles = `
 
 const Dashboard = () => {
   return (
+    // baru ditambah di pt 11
+
+
     <>
       <style>{dashboardStyles}</style>
 
@@ -324,13 +328,38 @@ const Dashboard = () => {
         </Card>
       </div>
 
+
+      {/* TAMBAH BARU UNTUK TABS PT 11  */}
+      <Tabs defaultValue="orders" className="mb-6">
+        <TabsList>
+          <TabsTrigger value="orders">Orders</TabsTrigger>
+          <TabsTrigger value="products">Products</TabsTrigger>
+          <TabsTrigger value="customers">Customers</TabsTrigger>
+        </TabsList>
+      </Tabs>
+
       {/* Recent Orders & Top Products */}
       <div className="bottom-grid">
         {/* Recent Orders */}
         <Card className="card">
           <div className="card-header">
             <h2 className="card-title">Recent Orders</h2>
-            <button className="view-all-btn">View All</button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="view-all-btn">
+                  View All
+                </button>
+              </DialogTrigger>
+
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Recent Orders</DialogTitle>
+                  <DialogDescription>
+                    Semua data pesanan terbaru customer.
+                  </DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
           </div>
           <div style={{ overflowX: 'auto' }}>
             <Table className="orders-table">
