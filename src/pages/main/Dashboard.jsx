@@ -1,8 +1,16 @@
 import { FiMoreVertical, FiTrendingUp, FiShoppingBag, FiUsers, FiDollarSign } from 'react-icons/fi';
 import Card from '../../Reusable/Card';
-import Table from '../../Reusable/Table';
+// import Table from '../../Reusable/Table';
 import { Tabs, TabsList, TabsTrigger, } from "@/components/ui/tabs";
-import {Dialog,DialogContent,DialogHeader,DialogTitle,DialogDescription,DialogTrigger,} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, } from "@/components/ui/dialog";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from "@/components/ui/table";
 
 const dashboardStyles = `
   /* Stats Cards Grid */
@@ -363,227 +371,177 @@ const Dashboard = () => {
           </div>
           <div style={{ overflowX: 'auto' }}>
             <Table className="orders-table">
-              <thead>
-                <tr>
-                  <th>Order ID</th>
-                  <th>Customer</th>
-                  <th>Date</th>
-                  <th>Amount</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="order-id">#ORD-001</td>
-                  <td className="customer-name">Muhammad Raeihan</td>
-                  <td className="order-date">Oct 22, 2025</td>
-                  <td className="order-amount">$150.00</td>
-                  <td><span className="status-badge completed">Completed</span></td>
-                </tr>
-                <tr>
-                  <td className="order-id">#ORD-002</td>
-                  <td className="customer-name">Alya Deka</td>
-                  <td className="order-date">Oct 26, 2025</td>
-                  <td className="order-amount">$360.00</td>
-                  <td><span className="status-badge processing">Processing</span></td>
-                </tr>
-                <tr>
-                  <td className="order-id">#ORD-003</td>
-                  <td className="customer-name">Muhammad Andi</td>
-                  <td className="order-date">Oct 23, 2025</td>
-                  <td className="order-amount">$89.50</td>
-                  <td><span className="status-badge completed">Completed</span></td>
-                </tr>
-                <tr>
-                  <td className="order-id">#ORD-004</td>
-                  <td className="customer-name">Dinda Safitri</td>
-                  <td className="order-date">Oct 22, 2025</td>
-                  <td className="order-amount">$210.00</td>
-                  <td><span className="status-badge cancelled">Cancelled</span></td>
-                </tr>
-                <tr>
-                  <td className="order-id">#ORD-005</td>
-                  <td className="customer-name">Andi Saputra</td>
-                  <td className="order-date">Oct 21, 2025</td>
-                  <td className="order-amount">$55.00</td>
-                  <td><span className="status-badge completed">Completed</span></td>
-                </tr>
-                <tr>
-                  <td className="order-id">#ORD-006</td>
-                  <td className="customer-name">Ayu Lestari</td>
-                  <td className="order-date">Oct 20, 2025</td>
-                  <td className="order-amount">$310.00</td>
-                  <td><span className="status-badge processing">Processing</span></td>
-                </tr>
-                <tr>
-                  <td className="order-id">#ORD-007</td>
-                  <td className="customer-name">Budi Hartono</td>
-                  <td className="order-date">Oct 20, 2025</td>
-                  <td className="order-amount">$78.00</td>
-                  <td><span className="status-badge completed">Completed</span></td>
-                </tr>
-                <tr>
-                  <td className="order-id">#ORD-008</td>
-                  <td className="customer-name">Citra Maharani</td>
-                  <td className="order-date">Oct 19, 2025</td>
-                  <td className="order-amount">$640.00</td>
-                  <td><span className="status-badge processing">Processing</span></td>
-                </tr>
-                <tr>
-                  <td className="order-id">#ORD-009</td>
-                  <td className="customer-name">Doni Kurniawan</td>
-                  <td className="order-date">Oct 19, 2025</td>
-                  <td className="order-amount">$150.00</td>
-                  <td><span className="status-badge completed">Completed</span></td>
-                </tr>
-                <tr>
-                  <td className="order-id">#ORD-010</td>
-                  <td className="customer-name">Eka Putri</td>
-                  <td className="order-date">Oct 18, 2025</td>
-                  <td className="order-amount">$95.00</td>
-                  <td><span className="status-badge cancelled">Cancelled</span></td>
-                </tr>
-                <tr>
-                  <td className="order-id">#ORD-011</td>
-                  <td className="customer-name">Fajar Ramadhan</td>
-                  <td className="order-date">Oct 18, 2025</td>
-                  <td className="order-amount">$500.00</td>
-                  <td><span className="status-badge processing">Processing</span></td>
-                </tr>
-                <tr>
-                  <td className="order-id">#ORD-012</td>
-                  <td className="customer-name">Gina Permata</td>
-                  <td className="order-date">Oct 17, 2025</td>
-                  <td className="order-amount">$135.00</td>
-                  <td><span className="status-badge completed">Completed</span></td>
-                </tr>
-                <tr>
-                  <td className="order-id">#ORD-013</td>
-                  <td className="customer-name">Hendra Wijaya</td>
-                  <td className="order-date">Oct 17, 2025</td>
-                  <td className="order-amount">$260.00</td>
-                  <td><span className="status-badge processing">Processing</span></td>
-                </tr>
-                <tr>
-                  <td className="order-id">#ORD-014</td>
-                  <td className="customer-name">Intan Sari</td>
-                  <td className="order-date">Oct 16, 2025</td>
-                  <td className="order-amount">$180.00</td>
-                  <td><span className="status-badge completed">Completed</span></td>
-                </tr>
-                <tr>
-                  <td className="order-id">#ORD-015</td>
-                  <td className="customer-name">Joko Susanto</td>
-                  <td className="order-date">Oct 16, 2025</td>
-                  <td className="order-amount">$420.00</td>
-                  <td><span className="status-badge cancelled">Cancelled</span></td>
-                </tr>
-                <tr>
-                  <td className="order-id">#ORD-016</td>
-                  <td className="customer-name">Kartika Dewi</td>
-                  <td className="order-date">Oct 15, 2025</td>
-                  <td className="order-amount">$230.00</td>
-                  <td><span className="status-badge completed">Completed</span></td>
-                </tr>
-                <tr>
-                  <td className="order-id">#ORD-017</td>
-                  <td className="customer-name">Lukman Hakim</td>
-                  <td className="order-date">Oct 15, 2023</td>
-                  <td className="order-amount">$75.00</td>
-                  <td><span className="status-badge processing">Processing</span></td>
-                </tr>
-                <tr>
-                  <td className="order-id">#ORD-018</td>
-                  <td className="customer-name">Maya Anggraini</td>
-                  <td className="order-date">Oct 14, 2023</td>
-                  <td className="order-amount">$610.00</td>
-                  <td><span className="status-badge completed">Completed</span></td>
-                </tr>
-                <tr>
-                  <td className="order-id">#ORD-019</td>
-                  <td className="customer-name">Nanda Prakoso</td>
-                  <td className="order-date">Oct 14, 2023</td>
-                  <td className="order-amount">$145.00</td>
-                  <td><span className="status-badge processing">Processing</span></td>
-                </tr>
-                <tr>
-                  <td className="order-id">#ORD-020</td>
-                  <td className="customer-name">Olivia Putri</td>
-                  <td className="order-date">Oct 13, 2023</td>
-                  <td className="order-amount">$390.00</td>
-                  <td><span className="status-badge completed">Completed</span></td>
-                </tr>
-                <tr>
-                  <td className="order-id">#ORD-021</td>
-                  <td className="customer-name">Putra Mahendra</td>
-                  <td className="order-date">Oct 13, 2023</td>
-                  <td className="order-amount">$88.00</td>
-                  <td><span className="status-badge cancelled">Cancelled</span></td>
-                </tr>
-                <tr>
-                  <td className="order-id">#ORD-022</td>
-                  <td className="customer-name">Qori Anisa</td>
-                  <td className="order-date">Oct 12, 2023</td>
-                  <td className="order-amount">$172.00</td>
-                  <td><span className="status-badge completed">Completed</span></td>
-                </tr>
-                <tr>
-                  <td className="order-id">#ORD-023</td>
-                  <td className="customer-name">Rafi Saputra</td>
-                  <td className="order-date">Oct 12, 2023</td>
-                  <td className="order-amount">$530.00</td>
-                  <td><span className="status-badge processing">Processing</span></td>
-                </tr>
-                <tr>
-                  <td className="order-id">#ORD-024</td>
-                  <td className="customer-name">Salsa Nabila</td>
-                  <td className="order-date">Oct 11, 2023</td>
-                  <td className="order-amount">$112.00</td>
-                  <td><span className="status-badge completed">Completed</span></td>
-                </tr>
-                <tr>
-                  <td className="order-id">#ORD-025</td>
-                  <td className="customer-name">Teguh Prasetyo</td>
-                  <td className="order-date">Oct 11, 2023</td>
-                  <td className="order-amount">$205.00</td>
-                  <td><span className="status-badge processing">Processing</span></td>
-                </tr>
-                <tr>
-                  <td className="order-id">#ORD-026</td>
-                  <td className="customer-name">Ulfa Rahma</td>
-                  <td className="order-date">Oct 10, 2023</td>
-                  <td className="order-amount">$67.00</td>
-                  <td><span className="status-badge completed">Completed</span></td>
-                </tr>
-                <tr>
-                  <td className="order-id">#ORD-027</td>
-                  <td className="customer-name">Vina Melati</td>
-                  <td className="order-date">Oct 10, 2023</td>
-                  <td className="order-amount">$480.00</td>
-                  <td><span className="status-badge cancelled">Cancelled</span></td>
-                </tr>
-                <tr>
-                  <td className="order-id">#ORD-028</td>
-                  <td className="customer-name">Wahyu Hidayat</td>
-                  <td className="order-date">Oct 09, 2023</td>
-                  <td className="order-amount">$158.00</td>
-                  <td><span className="status-badge completed">Completed</span></td>
-                </tr>
-                <tr>
-                  <td className="order-id">#ORD-029</td>
-                  <td className="customer-name">Yuni Kartika</td>
-                  <td className="order-date">Oct 09, 2023</td>
-                  <td className="order-amount">$320.00</td>
-                  <td><span className="status-badge processing">Processing</span></td>
-                </tr>
-                <tr>
-                  <td className="order-id">#ORD-030</td>
-                  <td className="customer-name">Zaki Firmansyah</td>
-                  <td className="order-date">Oct 08, 2023</td>
-                  <td className="order-amount">$99.00</td>
-                  <td><span className="status-badge completed">Completed</span></td>
-                </tr>
-              </tbody>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Order ID</TableHead>
+                  <TableHead>Customer</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Amount</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+
+              <TableBody>
+                <TableRow>
+                  <TableCell className="order-id">#ORD-001</TableCell>
+                  <TableCell className="customer-name">Muhammad Raeihan</TableCell>
+                  <TableCell className="order-date">Oct 22, 2025</TableCell>
+                  <TableCell className="order-amount">$150.00</TableCell>
+                  <TableCell><span className="status-badge completed">Completed</span></TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell className="order-id">#ORD-002</TableCell>
+                  <TableCell className="customer-name">Alya Deka</TableCell>
+                  <TableCell className="order-date">Oct 26, 2025</TableCell>
+                  <TableCell className="order-amount">$360.00</TableCell>
+                  <TableCell><span className="status-badge processing">Processing</span></TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell className="order-id">#ORD-003</TableCell>
+                  <TableCell className="customer-name">Muhammad Andi</TableCell>
+                  <TableCell className="order-date">Oct 23, 2025</TableCell>
+                  <TableCell className="order-amount">$89.50</TableCell>
+                  <TableCell><span className="status-badge completed">Completed</span></TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell className="order-id">#ORD-004</TableCell>
+                  <TableCell className="customer-name">Dinda Safitri</TableCell>
+                  <TableCell className="order-date">Oct 22, 2025</TableCell>
+                  <TableCell className="order-amount">$210.00</TableCell>
+                  <TableCell><span className="status-badge cancelled">Cancelled</span></TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell className="order-id">#ORD-005</TableCell>
+                  <TableCell className="customer-name">Andi Saputra</TableCell>
+                  <TableCell className="order-date">Oct 21, 2025</TableCell>
+                  <TableCell className="order-amount">$55.00</TableCell>
+                  <TableCell><span className="status-badge completed">Completed</span></TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell className="order-id">#ORD-006</TableCell>
+                  <TableCell className="customer-name">Ayu Lestari</TableCell>
+                  <TableCell className="order-date">Oct 20, 2025</TableCell>
+                  <TableCell className="order-amount">$310.00</TableCell>
+                  <TableCell><span className="status-badge processing">Processing</span></TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell className="order-id">#ORD-007</TableCell>
+                  <TableCell className="customer-name">Budi Hartono</TableCell>
+                  <TableCell className="order-date">Oct 20, 2025</TableCell>
+                  <TableCell className="order-amount">$78.00</TableCell>
+                  <TableCell><span className="status-badge completed">Completed</span></TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell className="order-id">#ORD-008</TableCell>
+                  <TableCell className="customer-name">Citra Maharani</TableCell>
+                  <TableCell className="order-date">Oct 19, 2025</TableCell>
+                  <TableCell className="order-amount">$640.00</TableCell>
+                  <TableCell><span className="status-badge processing">Processing</span></TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell className="order-id">#ORD-009</TableCell>
+                  <TableCell className="customer-name">Doni Kurniawan</TableCell>
+                  <TableCell className="order-date">Oct 19, 2025</TableCell>
+                  <TableCell className="order-amount">$150.00</TableCell>
+                  <TableCell><span className="status-badge completed">Completed</span></TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell className="order-id">#ORD-010</TableCell>
+                  <TableCell className="customer-name">Eka Putri</TableCell>
+                  <TableCell className="order-date">Oct 18, 2025</TableCell>
+                  <TableCell className="order-amount">$95.00</TableCell>
+                  <TableCell><span className="status-badge cancelled">Cancelled</span></TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell className="order-id">#ORD-011</TableCell>
+                  <TableCell className="customer-name">Fajar Ramadhan</TableCell>
+                  <TableCell className="order-date">Oct 18, 2025</TableCell>
+                  <TableCell className="order-amount">$500.00</TableCell>
+                  <TableCell><span className="status-badge processing">Processing</span></TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell className="order-id">#ORD-012</TableCell>
+                  <TableCell className="customer-name">Gina Permata</TableCell>
+                  <TableCell className="order-date">Oct 17, 2025</TableCell>
+                  <TableCell className="order-amount">$135.00</TableCell>
+                  <TableCell><span className="status-badge completed">Completed</span></TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell className="order-id">#ORD-013</TableCell>
+                  <TableCell className="customer-name">Hendra Wijaya</TableCell>
+                  <TableCell className="order-date">Oct 17, 2025</TableCell>
+                  <TableCell className="order-amount">$260.00</TableCell>
+                  <TableCell><span className="status-badge processing">Processing</span></TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell className="order-id">#ORD-014</TableCell>
+                  <TableCell className="customer-name">Intan Sari</TableCell>
+                  <TableCell className="order-date">Oct 16, 2025</TableCell>
+                  <TableCell className="order-amount">$180.00</TableCell>
+                  <TableCell><span className="status-badge completed">Completed</span></TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell className="order-id">#ORD-015</TableCell>
+                  <TableCell className="customer-name">Joko Susanto</TableCell>
+                  <TableCell className="order-date">Oct 16, 2025</TableCell>
+                  <TableCell className="order-amount">$420.00</TableCell>
+                  <TableCell><span className="status-badge cancelled">Cancelled</span></TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell className="order-id">#ORD-016</TableCell>
+                  <TableCell className="customer-name">Kartika Dewi</TableCell>
+                  <TableCell className="order-date">Oct 15, 2025</TableCell>
+                  <TableCell className="order-amount">$230.00</TableCell>
+                  <TableCell><span className="status-badge completed">Completed</span></TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell className="order-id">#ORD-017</TableCell>
+                  <TableCell className="customer-name">Lukman Hakim</TableCell>
+                  <TableCell className="order-date">Oct 15, 2023</TableCell>
+                  <TableCell className="order-amount">$75.00</TableCell>
+                  <TableCell><span className="status-badge processing">Processing</span></TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell className="order-id">#ORD-018</TableCell>
+                  <TableCell className="customer-name">Maya Anggraini</TableCell>
+                  <TableCell className="order-date">Oct 14, 2023</TableCell>
+                  <TableCell className="order-amount">$610.00</TableCell>
+                  <TableCell><span className="status-badge completed">Completed</span></TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell className="order-id">#ORD-019</TableCell>
+                  <TableCell className="customer-name">Nanda Prakoso</TableCell>
+                  <TableCell className="order-date">Oct 14, 2023</TableCell>
+                  <TableCell className="order-amount">$145.00</TableCell>
+                  <TableCell><span className="status-badge processing">Processing</span></TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell className="order-id">#ORD-020</TableCell>
+                  <TableCell className="customer-name">Olivia Putri</TableCell>
+                  <TableCell className="order-date">Oct 13, 2023</TableCell>
+                  <TableCell className="order-amount">$390.00</TableCell>
+                  <TableCell><span className="status-badge completed">Completed</span></TableCell>
+                </TableRow>
+              </TableBody>
             </Table>
           </div>
         </Card>
