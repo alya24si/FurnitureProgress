@@ -1,8 +1,11 @@
 import HeroSection from '../Reusable/HeroSection';
 import Container from '../Reusable/Container';
 import Button from '../Reusable/Button';
+import { useNavigate } from 'react-router-dom';
 
 const Hero = () => {
+  const navigate = useNavigate();
+
   return (
     <HeroSection style={styles.hero}>
       <Container style={styles.container}>
@@ -23,6 +26,7 @@ const Hero = () => {
             variant="primary"
             className="btn btn-primary"
             style={styles.btn}
+            onClick={() => navigate('/products')}
           >
             BELI SEKARANG
           </Button>

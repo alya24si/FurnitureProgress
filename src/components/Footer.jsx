@@ -1,8 +1,12 @@
 import { FiInstagram } from 'react-icons/fi';
 import Footer from '../Reusable/Footer';
 import Container from '../Reusable/Container';
+import { useNavigate } from 'react-router-dom';
+
 
 const FooterSection = () => {
+const navigate = useNavigate();
+
   return (
     <Footer style={styles.footer}>
       <Container style={styles.container}>
@@ -10,11 +14,11 @@ const FooterSection = () => {
           <div style={styles.column}>
             <h3 style={styles.logo}>Alya Furniture.</h3>
             <p style={styles.description}>
-              Jl. HR Soebrantas No. 88 Pekanbaru, <br/>
+              Jl. HR Soebrantas No. 88 Pekanbaru, <br />
               Riau 28293 Indonesia
             </p>
           </div>
-          
+
           <div style={styles.column}>
             <h4 style={styles.heading}>Menu</h4>
             <ul style={styles.list}>
@@ -37,12 +41,14 @@ const FooterSection = () => {
           <div style={styles.column}>
             <h4 style={styles.heading}>Newsletter</h4>
             <div style={styles.newsletterForm}>
-              <input 
-                type="email" 
-                placeholder="Masukkan Email Anda" 
-                style={styles.input} 
+              <input
+                type="email"
+                placeholder="Masukkan Email Anda"
+                style={styles.input}
               />
-              <button style={styles.subscribeBtn}>BERLANGGANAN</button>
+              <button onClick={() => navigate('/membership')}>
+                BERLANGGANAN
+              </button>
             </div>
           </div>
         </div>

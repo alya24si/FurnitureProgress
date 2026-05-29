@@ -7,6 +7,7 @@ import AdminLayout from './layouts/AdminLayout';
 import Loading from './components/Loading';
 import ErrorBoundary from './components/ErrorBoundary';
 
+
 // Lazy load pages
 const Home = React.lazy(() => import('./pages/main/Home'));
 const Login = React.lazy(() => import('./pages/auth/Login'));
@@ -22,6 +23,8 @@ const NotFound = React.lazy(() => import('./pages/NotFound'));
 const FavoriteProducts = React.lazy(() => import('./pages/main/FavoriteProducts'));
 const About = React.lazy(() => import('./pages/main/About'));
 const Contact = React.lazy(() => import('./pages/main/Contact'));
+const Membership = React.lazy(() => import('./pages/main/Membership'));
+
 
 function App() {
   return (
@@ -33,6 +36,7 @@ function App() {
               <Route index element={<Home />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/membership" element={<Membership />} />
             </Route>
 
 
@@ -50,7 +54,7 @@ function App() {
               <Route path="/users" element={<Users />} />
               <Route path="/users/:abc" element={<UserDetail />} />
               <Route path="/favorite-products" element={<FavoriteProducts />} />
-
+              
 
 
             </Route>
