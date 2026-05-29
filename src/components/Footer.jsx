@@ -1,11 +1,11 @@
 import { FiInstagram } from 'react-icons/fi';
 import Footer from '../Reusable/Footer';
 import Container from '../Reusable/Container';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 
 const FooterSection = () => {
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
   return (
     <Footer style={styles.footer}>
@@ -19,22 +19,16 @@ const navigate = useNavigate();
             </p>
           </div>
 
-          <div style={styles.column}>
-            <h4 style={styles.heading}>Menu</h4>
-            <ul style={styles.list}>
-              <li><a href="#" style={styles.link}>Beranda</a></li>
-              <li><a href="#" style={styles.link}>Produk</a></li>
-              <li><a href="#" style={styles.link}>Tentang Kami</a></li>
-              <li><a href="#" style={styles.link}>Kontak</a></li>
-            </ul>
-          </div>
+
 
           <div style={styles.column}>
             <h4 style={styles.heading}>Layanan</h4>
             <ul style={styles.list}>
-              <li><a href="#" style={styles.link}>Metode Pembayaran</a></li>
-              <li><a href="#" style={styles.link}>Pengembalian Barang</a></li>
-              <li><a href="#" style={styles.link}>Kebijakan Privasi</a></li>
+              <Link to="/payment-method">Metode Pembayaran</Link>
+              <Link to="/return-product">Pengembalian Barang</Link>
+              <Link to="/privacy-policy" style={styles.link}>
+                Kebijakan Privasi
+              </Link>
             </ul>
           </div>
 
