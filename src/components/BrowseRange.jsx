@@ -2,17 +2,31 @@ import ProductSection from '../Reusable/ProductSection';
 
 const BrowseRange = () => {
   const categories = [
-    { name: 'Dining', image: '/assets/images/dining_room.png' },
-    { name: 'Living', image: '/assets/images/living_room.png' },
-    { name: 'Bedroom', image: '/assets/images/bedroom.png' },
+    {
+      name: 'Ruang Makan',
+      image: '/assets/images/dining_room.png'
+    },
+    {
+      name: 'Ruang Tamu',
+      image: '/assets/images/living_room.png'
+    },
+    {
+      name: 'Kamar Tidur',
+      image: '/assets/images/bedroom.png'
+    }
   ];
 
   return (
     <ProductSection style={styles.section}>
       <div className="container">
-        <h2 className="section-title">Browse The Range</h2>
-        <p className="section-subtitle">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-        
+        <h2 className="section-title">
+          Kategori Furniture
+        </h2>
+
+        <p className="section-subtitle">
+          Pilih furniture terbaik sesuai kebutuhan ruangan Anda.
+        </p>
+
         <div style={styles.grid}>
           {categories.map((cat, index) => (
             <div key={index} style={styles.card}>

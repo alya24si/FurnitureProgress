@@ -1,13 +1,12 @@
-import { GiSelfLove } from "react-icons/gi"; 
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   FiGrid,
-  FiUser,
   FiBox,
   FiUsers,
   FiTrendingUp,
   FiMoreVertical
 } from 'react-icons/fi';
+
 import SidebarReusable from '../Reusable/Sidebar';
 import NavItem from '../Reusable/NavItem';
 
@@ -49,6 +48,7 @@ const sidebarStyles = `
   .sidebar-nav::-webkit-scrollbar {
     display: none;
   }
+
   .sidebar-nav {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -83,10 +83,11 @@ const sidebarStyles = `
     position: relative;
     font-weight: 600;
   }
+
   .nav-item.active .nav-icon {
     color: #6E39CB;
   }
-  
+
   .nav-item.active::before {
     content: '';
     position: absolute;
@@ -159,6 +160,7 @@ const sidebarStyles = `
     justify-content: center;
     border-radius: 4px;
   }
+
   .profile-menu-btn:hover {
     background: rgba(255,255,255,0.1);
   }
@@ -170,37 +172,79 @@ const Sidebar = () => {
   return (
     <>
       <style>{sidebarStyles}</style>
+
       <SidebarReusable className="sidebar">
         <div className="sidebar-logo">
           <img src="/assets/images/logofix.jpeg" alt="Logo" />
         </div>
 
         <nav className="sidebar-nav">
-          <NavLink to="/admin/dashboard" end className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}>
+
+          <NavLink
+            to="/admin/dashboard"
+            end
+            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+          >
             <FiGrid className="nav-icon" />
             <span>Dashboard</span>
           </NavLink>
-          
-          <NavLink to="/users" className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}>
-            <FiUser className="nav-icon" />
-            <span>Users</span>
-          </NavLink>
-          
-          <NavLink to="/products" className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}>
+
+          <NavLink
+            to="/admin/products"
+            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+          >
             <FiBox className="nav-icon" />
             <span>Products</span>
           </NavLink>
-          
-          <NavLink to="/customers/1" className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}>
+
+          <NavLink
+            to="/admin/customers"
+            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+          >
             <FiUsers className="nav-icon" />
-            <span>Customer</span>
+            <span>Customers</span>
           </NavLink>
 
-          <NavLink to="/favorite-products" className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}>
-            <GiSelfLove className="nav-icon" />
-            <span>Diminati</span>
+          <NavLink
+            to="/admin/orders"
+            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+          >
+            <FiUsers className="nav-icon" />
+            <span>Orders</span>
           </NavLink>
-          
+
+          <NavLink
+            to="/admin/membership-crm"
+            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+          >
+            <FiUsers className="nav-icon" />
+            <span>Membership CRM</span>
+          </NavLink>
+
+          <NavLink
+            to="/admin/feedback"
+            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+          >
+            <FiUsers className="nav-icon" />
+            <span>Feedback CRM</span>
+          </NavLink>
+
+          <NavLink
+            to="/admin/analytics"
+            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+          >
+            <FiTrendingUp className="nav-icon" />
+            <span>Analytics CRM</span>
+          </NavLink>
+
+          <NavLink
+            to="/admin/campaign"
+            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+          >
+            <FiTrendingUp className="nav-icon" />
+            <span>Campaign CRM</span>
+          </NavLink>
+
           <NavItem
             onClick={() => navigate('/sales-report')}
             icon={<FiTrendingUp className="nav-icon" />}
@@ -209,21 +253,24 @@ const Sidebar = () => {
           >
             Sales Report
           </NavItem>
+
         </nav>
 
         <div className="sidebar-footer">
           <div className="profile-widget">
-            <img 
-              src="https://ui-avatars.com/api/?name=Alya+Deka&background=f9fafb&color=101828" 
-              alt="Admin" 
-              className="profile-avatar" 
+            <img
+              src="https://ui-avatars.com/api/?name=Alya+Deka&background=f9fafb&color=101828"
+              alt="Admin"
+              className="profile-avatar"
             />
+
             <div className="profile-info">
               <h4 className="profile-name">Alya Deka</h4>
               <p className="profile-email">alya@furniture.com</p>
             </div>
-            <button 
-              className="profile-menu-btn" 
+
+            <button
+              className="profile-menu-btn"
               onClick={() => navigate('/login')}
               title="Signout"
             >

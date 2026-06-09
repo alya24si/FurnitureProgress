@@ -152,7 +152,10 @@ const AdminLayout = () => {
           <header className="admin-header">
             <div className="admin-search-box">
               <FiSearch style={{ color: '#9ca3af', fontSize: 18, flexShrink: 0 }} />
-              <input type="text" placeholder="Search anything here..." />
+              <input
+                type="text"
+                placeholder="Cari data pelanggan, produk, atau pesanan..."
+              />
             </div>
 
             <div className="admin-header-right">
@@ -162,13 +165,13 @@ const AdminLayout = () => {
               </button>
               <div className="admin-profile">
                 <img
-                  src="https://ui-avatars.com/api/?name=Alya+Deka&background=054C73&color=fff"
+                  src="https://ui-avatars.com/api/?name=Alya+Deka&background=6E39CB&color=fff"
                   alt="Admin"
                   className="admin-avatar"
                 />
                 <div>
-                  <p className="admin-name">Admin</p>
-                  <p className="admin-role">Alya</p>
+                  <p className="admin-name">Alya Deka</p>
+                  <p className="admin-role">Administrator</p>
                 </div>
               </div>
             </div>

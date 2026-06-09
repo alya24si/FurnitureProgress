@@ -23,9 +23,13 @@ const HowItWorks = () => {
   return (
     <FeatureSection style={styles.section}>
       <div className="container text-center">
-        <h2 className="section-title">How It Works</h2>
-        <p className="section-subtitle">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        <h2 className="section-title">
+          Cara Berbelanja
+        </h2>
 
+        <p className="section-subtitle">
+          Proses pembelian furniture yang mudah, cepat, dan aman.
+        </p>
         <div style={styles.grid}>
           {steps.map((step, index) => (
             <div key={index} style={styles.card}>

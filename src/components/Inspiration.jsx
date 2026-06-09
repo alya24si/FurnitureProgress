@@ -10,9 +10,14 @@ const Inspiration = () => {
   return (
     <ProductSection style={styles.section}>
       <div className="container text-center">
-        <h2 className="section-title">Inspiration Collection</h2>
-        <p className="section-subtitle">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-        
+        <h2 className="section-title">
+          Inspirasi Interior Rumah
+        </h2>
+
+        <p className="section-subtitle">
+          Temukan inspirasi desain ruang tamu, kamar tidur, dan ruang makan modern.
+        </p>
+
         <div style={styles.grid}>
           {images.map((img, index) => (
             <div key={index} style={styles.imageCard}>

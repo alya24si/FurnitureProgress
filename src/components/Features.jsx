@@ -3,28 +3,28 @@ import FeatureSection from '../Reusable/FeatureSection';
 import Container from '../Reusable/Container';
 
 const Features = () => {
-  const features = [
-    {
-      icon: <FiTruck />,
-      title: 'Free Delivery',
-      description: 'Lorem ipsum dolor sit amet.'
-    },
-    {
-      icon: <FiHeadphones />,
-      title: 'Support 24/7',
-      description: 'Lorem ipsum dolor sit amet.'
-    },
-    {
-      icon: <FiCheckCircle />,
-      title: '100% Authentic',
-      description: 'Lorem ipsum dolor sit amet.'
-    },
-    {
-      icon: <FiShield />,
-      title: 'Secure Payment',
-      description: 'Lorem ipsum dolor sit amet.'
-    }
-  ];
+ const features = [
+  {
+    icon: <FiTruck />,
+    title: 'Gratis Ongkir',
+    description: 'Gratis pengiriman untuk wilayah Pekanbaru dan sekitarnya.'
+  },
+  {
+    icon: <FiHeadphones />,
+    title: 'Layanan Pelanggan',
+    description: 'Tim kami siap membantu kebutuhan furniture Anda.'
+  },
+  {
+    icon: <FiCheckCircle />,
+    title: 'Produk Berkualitas',
+    description: 'Furniture dibuat dari material pilihan terbaik.'
+  },
+  {
+    icon: <FiShield />,
+    title: 'Pembayaran Aman',
+    description: 'Mendukung berbagai metode pembayaran terpercaya.'
+  }
+];
 
   return (
     <FeatureSection style={styles.features}>

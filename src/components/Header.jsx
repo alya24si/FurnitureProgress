@@ -1,5 +1,9 @@
 import { useState } from 'react';
-import { FiUser, FiSearch, FiHeart, FiShoppingCart } from 'react-icons/fi';
+import {
+  FiUser,
+  FiHeart,
+  FiShoppingCart
+} from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import Header from '../Reusable/Header';
 import Container from '../Reusable/Container';
@@ -11,54 +15,146 @@ const HeaderSection = () => {
   return (
     <Header style={styles.header}>
       <Container style={styles.container}>
+        
+        {/* Logo */}
         <div style={styles.logo}>
-          <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-            <h2>Furniture</h2>
+          <Link
+            to="/"
+            style={{
+              textDecoration: 'none',
+              color: '#6E39CB',
+              fontWeight: '700'
+            }}
+          >
+            <h2>FurnitureKu</h2>
           </Link>
         </div>
 
+        {/* Menu */}
         <nav style={styles.nav}>
           <ul style={styles.navList}>
-            <li><Link to="/" style={{ ...styles.navLink, fontWeight: 600 }}>Home</Link></li>
-            <li><Link to="/products" style={styles.navLink}>Shop</Link></li>
             <li>
-              <Link to="/about" style={styles.navLink}>
-                About
+              <Link
+                to="/"
+                style={{
+                  ...styles.navLink,
+                  fontWeight: 600
+                }}
+              >
+                Beranda
               </Link>
             </li>
 
             <li>
-              <Link to="/contact" style={styles.navLink}>
-                Contact
+              <Link
+                to="/products"
+                style={styles.navLink}
+              >
+                Produk
+              </Link>
+            </li>
+
+            <li>
+              <Link
+                to="/about"
+                style={styles.navLink}
+              >
+                Tentang Kami
+              </Link>
+            </li>
+
+            <li>
+              <Link
+                to="/contact"
+                style={styles.navLink}
+              >
+                Kontak
               </Link>
             </li>
           </ul>
         </nav>
 
+        {/* Icon Menu */}
         <div style={styles.icons}>
 
-          <Link to="/favorite-products" style={styles.icon}>
+          {/* Favorit */}
+          <Link
+            to="/favorite-products"
+            style={styles.icon}
+          >
             <FiHeart />
           </Link>
+
+          {/* Keranjang */}
           <div style={{ position: 'relative' }}>
             <button
               type="button"
               onClick={() => setShowCart((prev) => !prev)}
-              style={{ ...styles.icon, background: 'none', border: 'none', cursor: 'pointer' }}
-              aria-label="Cart"
+              style={{
+                ...styles.icon,
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer'
+              }}
             >
               <FiShoppingCart />
             </button>
+
             {showCart && (
               <Cart style={styles.cartPanel}>
-                <h4 style={{ margin: 0, fontSize: '15px', fontWeight: 700 }}>Keranjang</h4>
-                <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-light)' }}>
-                  Belum ada item di keranjang.
+                <h4
+                  style={{
+                    margin: 0,
+                    fontSize: '15px',
+                    fontWeight: 700
+                  }}
+                >
+                  Keranjang Belanja
+                </h4>
+
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: '13px',
+                    color: 'var(--text-light)'
+                  }}
+                >
+                  Belum ada produk di keranjang.
                 </p>
-                <Link to="/products" style={styles.cartLink}>Mulai belanja</Link>
+
+                <Link
+                  to="/products"
+                  style={styles.cartLink}
+                >
+                  Mulai Belanja
+                </Link>
               </Cart>
             )}
           </div>
+
+          {/* Akun */}
+          <Link
+            to="/login"
+            style={styles.icon}
+          >
+            <FiUser />
+          </Link>
+
+          {/* Login */}
+          <Link
+            to="/login"
+            style={styles.loginBtn}
+          >
+            Login
+          </Link>
+
+          {/* Register */}
+          <Link
+            to="/register"
+            style={styles.registerBtn}
+          >
+            Daftar
+          </Link>
         </div>
       </Container>
     </Header>
@@ -74,37 +170,62 @@ const styles = {
     zIndex: 1000,
     boxShadow: '0 2px 10px rgba(0,0,0,0.05)'
   },
+
   container: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'center'
   },
+
   logo: {
     fontWeight: 'bold',
-    fontSize: '24px',
+    fontSize: '24px'
   },
+
   nav: {
-    display: 'flex',
+    display: 'flex'
   },
+
   navList: {
     display: 'flex',
     gap: '40px',
+    listStyle: 'none'
   },
+
   navLink: {
     color: 'var(--text-dark)',
     fontSize: '16px',
-    transition: 'color 0.3s ease',
+    textDecoration: 'none'
   },
+
   icons: {
     display: 'flex',
-    gap: '24px',
+    alignItems: 'center',
+    gap: '16px'
   },
+
   icon: {
     color: 'var(--text-dark)',
     fontSize: '20px',
     cursor: 'pointer',
-    transition: 'color 0.3s ease',
+    textDecoration: 'none'
   },
+
+  loginBtn: {
+    textDecoration: 'none',
+    color: '#6E39CB',
+    fontWeight: '600'
+  },
+
+  registerBtn: {
+    textDecoration: 'none',
+    background: '#6E39CB',
+    color: '#fff',
+    padding: '8px 16px',
+    borderRadius: '8px',
+    fontWeight: '600'
+  },
+
   cartPanel: {
     position: 'absolute',
     top: 'calc(100% + 12px)',
@@ -113,14 +234,16 @@ const styles = {
     background: 'var(--bg-card)',
     boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
     zIndex: 1100,
-    padding: '16px',
+    padding: '16px'
   },
+
   cartLink: {
     display: 'inline-block',
+    marginTop: '10px',
     fontSize: '13px',
     fontWeight: 600,
-    color: 'var(--primary)',
-    textDecoration: 'none',
+    color: '#6E39CB',
+    textDecoration: 'none'
   }
 };
 
