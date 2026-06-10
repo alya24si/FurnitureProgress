@@ -14,8 +14,8 @@ const sidebarStyles = `
   .sidebar {
     width: 260px;
     min-width: 260px;
-    background: #ffffff;
-    border-right: 1px solid #eaecf0;
+    background: linear-gradient(180deg, #fff7f8 0%, #ffffff 100%);
+    border-right: 1px solid #f1d6d9;
     display: flex;
     flex-direction: column;
     height: 100vh;
@@ -31,8 +31,9 @@ const sidebarStyles = `
   }
 
   .sidebar-logo img {
-    height: 48px;
+    height: 52px;
     object-fit: contain;
+    filter: drop-shadow(0 4px 10px rgba(183, 110, 121, 0.25));
   }
 
   .sidebar-nav {
@@ -41,7 +42,7 @@ const sidebarStyles = `
     padding: 0 16px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
     margin-top: 24px;
   }
 
@@ -57,35 +58,38 @@ const sidebarStyles = `
   .nav-item {
     display: flex;
     align-items: center;
-    padding: 10px 14px;
-    border-radius: 8px;
+    padding: 11px 14px;
+    border-radius: 12px;
     cursor: pointer;
-    color: #475467;
-    transition: all 0.2s;
+    color: #6b5b5f;
+    transition: all 0.25s ease;
     font-size: 14px;
     font-weight: 500;
     text-decoration: none;
     gap: 12px;
+    position: relative;
   }
 
   .nav-item:hover {
-    background: #f9fafb;
-    color: #101828;
+    background: rgba(183, 110, 121, 0.08);
+    color: #b76e79;
+    transform: translateX(3px);
   }
 
   .nav-icon {
     font-size: 18px;
+    transition: all 0.25s ease;
   }
 
   .nav-item.active {
-    background: #EBE4FF;
-    color: #6E39CB;
-    position: relative;
+    background: linear-gradient(135deg, #b76e79, #d9a5a5);
+    color: #fff;
     font-weight: 600;
+    box-shadow: 0 6px 18px rgba(183, 110, 121, 0.25);
   }
 
   .nav-item.active .nav-icon {
-    color: #6E39CB;
+    color: #fff;
   }
 
   .nav-item.active::before {
@@ -96,8 +100,9 @@ const sidebarStyles = `
     transform: translateY(-50%);
     width: 4px;
     height: 32px;
-    background: #6E39CB;
+    background: #b76e79;
     border-radius: 0 4px 4px 0;
+    box-shadow: 0 0 10px rgba(183, 110, 121, 0.4);
   }
 
   .sidebar-footer {
@@ -105,23 +110,23 @@ const sidebarStyles = `
   }
 
   .profile-widget {
-    background: #6E39CB;
-    border-radius: 12px;
+    background: linear-gradient(135deg, #b76e79, #d9a5a5);
+    border-radius: 14px;
     padding: 12px;
     display: flex;
     align-items: center;
     gap: 12px;
     color: #fff;
     position: relative;
-    box-shadow: 0 4px 12px rgba(110, 57, 203, 0.2);
+    box-shadow: 0 8px 22px rgba(183, 110, 121, 0.25);
   }
 
   .profile-avatar {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid rgba(255, 255, 255, 0.8);
+    border: 2px solid rgba(255, 255, 255, 0.9);
   }
 
   .profile-info {
@@ -133,7 +138,7 @@ const sidebarStyles = `
 
   .profile-name {
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 700;
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
@@ -142,7 +147,7 @@ const sidebarStyles = `
 
   .profile-email {
     font-size: 11px;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(255, 255, 255, 0.85);
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
@@ -150,24 +155,31 @@ const sidebarStyles = `
   }
 
   .profile-menu-btn {
-    background: transparent;
+    background: rgba(255,255,255,0.15);
     border: none;
     color: #fff;
     cursor: pointer;
-    padding: 4px;
+    padding: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 4px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
   }
 
   .profile-menu-btn:hover {
-    background: rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.25);
+    transform: rotate(10deg);
   }
 `;
 
-const Sidebar = () => {
+// =========================
+// 🔥 FIX LOGIC ONLY
+// =========================
+const Sidebar = ({ search = "" }) => {
   const navigate = useNavigate();
+
+  const keyword = search.toLowerCase().trim();
 
   return (
     <>
@@ -180,77 +192,90 @@ const Sidebar = () => {
 
         <nav className="sidebar-nav">
 
+          {/* DASHBOARD (ONLY ROUTE ACTIVE) */}
           <NavLink
             to="/admin/dashboard"
             end
-            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+            className={({ isActive }) =>
+              `nav-item${isActive ? ' active' : ''}`
+            }
           >
             <FiGrid className="nav-icon" />
             <span>Dashboard</span>
           </NavLink>
 
+          {/* PRODUCTS */}
           <NavLink
-            to="/admin/products"
-            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+            to="/admin/product-crm"
+            className={({ isActive }) =>
+              `nav-item${(isActive || keyword.includes("product") || keyword.includes("produk")) ? ' active' : ''}`
+            }
           >
             <FiBox className="nav-icon" />
             <span>Products</span>
           </NavLink>
 
+          {/* CUSTOMERS */}
           <NavLink
             to="/admin/customers"
-            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+            className={({ isActive }) =>
+              `nav-item${(isActive || keyword.includes("customer") || keyword.includes("pelanggan")) ? ' active' : ''}`
+            }
           >
             <FiUsers className="nav-icon" />
             <span>Customers</span>
           </NavLink>
 
-          <NavLink
-            to="/admin/orders"
-            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
-          >
-            <FiUsers className="nav-icon" />
-            <span>Orders</span>
-          </NavLink>
-
+          {/* MEMBERSHIP */}
           <NavLink
             to="/admin/membership-crm"
-            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+            className={({ isActive }) =>
+              `nav-item${(isActive || keyword.includes("member") || keyword.includes("membership")) ? ' active' : ''}`
+            }
           >
             <FiUsers className="nav-icon" />
-            <span>Membership CRM</span>
+            <span>Membership</span>
           </NavLink>
 
+          {/* FEEDBACK */}
           <NavLink
             to="/admin/feedback"
-            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+            className={({ isActive }) =>
+              `nav-item${(isActive || keyword.includes("feedback")) ? ' active' : ''}`
+            }
           >
             <FiUsers className="nav-icon" />
-            <span>Feedback CRM</span>
+            <span>Feedback</span>
           </NavLink>
 
+          {/* ANALYTICS */}
           <NavLink
             to="/admin/analytics"
-            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+            className={({ isActive }) =>
+              `nav-item${(isActive || keyword.includes("analytics")) ? ' active' : ''}`
+            }
           >
             <FiTrendingUp className="nav-icon" />
-            <span>Analytics CRM</span>
+            <span>Analytics</span>
           </NavLink>
 
+          {/* CAMPAIGN */}
           <NavLink
             to="/admin/campaign"
-            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+            className={({ isActive }) =>
+              `nav-item${(isActive || keyword.includes("campaign")) ? ' active' : ''}`
+            }
           >
             <FiTrendingUp className="nav-icon" />
-            <span>Campaign CRM</span>
+            <span>Campaign</span>
           </NavLink>
 
+          {/* SALES REPORT */}
           <NavItem
             onClick={() => navigate('/sales-report')}
-            icon={<FiTrendingUp className="nav-icon" />}
             className="nav-item"
-            style={{ cursor: 'pointer' }}
           >
+            <FiTrendingUp className="nav-icon" />
             Sales Report
           </NavItem>
 

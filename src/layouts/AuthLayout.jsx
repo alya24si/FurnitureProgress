@@ -1,134 +1,187 @@
-import { Outlet } from 'react-router-dom';
-import { FiUser, FiSearch, FiPhone } from 'react-icons/fi';
+import { Outlet } from "react-router-dom";
 
 const authLayoutStyles = `
-  .auth-layout {
-    display: flex;
-    min-height: 100vh;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  *{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
   }
 
-  /* Left side */
-  .auth-brand {
-    width: 50%;
-    background: #2764E8;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 60px 10%;
-    color: #fff;
+  .auth-layout{
+    display:flex;
+    min-height:100vh;
+    font-family:'Inter',sans-serif;
+    background:#F8F5F2;
   }
 
-  .auth-brand h1 {
-    font-size: 32px;
-    font-weight: 700;
-    margin-bottom: 40px;
-    margin-left: 20px;
+  /* LEFT */
+  .auth-brand{
+    width:55%;
+    background:linear-gradient(
+      135deg,
+      #B76E79,
+      #C98B95,
+      #D8B2B8
+    );
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:50px;
   }
 
-  .auth-feature-list {
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-    max-width: 320px;
-    margin-left: 20px;
+  .brand-content{
+    max-width:550px;
+    color:white;
   }
 
-  .auth-feature-item {
-    display: flex;
-    align-items: center;
-    gap: 16px;
+  .brand-badge{
+    display:inline-block;
+    padding:10px 20px;
+    border-radius:30px;
+    background:rgba(255,255,255,.18);
+    margin-bottom:25px;
+    font-weight:600;
   }
 
-  .af-icon-circle {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    color: #fff;
-    font-size: 20px;
-  }
-  
-  .af-icon-1 { background: #0F3B9C; }
-  .af-icon-2 { background: #1DC9B7; }
-  .af-icon-3 { background: #10C44C; }
-
-  .af-text {
-    font-size: 13px;
-    line-height: 1.5;
-    color: rgba(255,255,255,0.95);
+  .brand-title{
+    font-size:56px;
+    font-weight:700;
+    line-height:1.1;
+    margin-bottom:20px;
   }
 
-  /* Right side */
-  .auth-form-area {
-    width: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #ffffff;
-    padding: 40px;
+  .brand-desc{
+    font-size:18px;
+    line-height:1.8;
+    margin-bottom:35px;
   }
 
-  .auth-form-wrapper {
-    width: 100%;
-    max-width: 380px;
+  .showcase-card{
+    background:rgba(255,255,255,.15);
+    backdrop-filter:blur(12px);
+    border-radius:25px;
+    padding:20px;
   }
 
-  @media (max-width: 900px) {
-    .auth-brand { display: none; }
+  .showcase-image{
+    width:100%;
+    height:280px;
+    object-fit:cover;
+    border-radius:18px;
+    margin-bottom:15px;
+  }
+
+  .showcase-card h3{
+    font-size:24px;
+    margin-bottom:10px;
+  }
+
+  .showcase-card p{
+    font-size:15px;
+    line-height:1.7;
+  }
+
+  /* RIGHT */
+  .auth-form-area{
+    width:45%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:40px;
+    background:#F8F5F2;
+  }
+
+  .auth-form-wrapper{
+    width:100%;
+    max-width:450px;
+    background:white;
+    padding:40px;
+    border-radius:30px;
+    box-shadow:0 15px 40px rgba(183,110,121,.15);
+  }
+
+  @media(max-width:900px){
+
+    .auth-layout{
+      flex-direction:column;
+    }
+
+    .auth-brand{
+      display:none;
+    }
+
+    .auth-form-area{
+      width:100%;
+      min-height:100vh;
+      padding:20px;
+    }
+
+    .auth-form-wrapper{
+      padding:25px;
+    }
   }
 `;
 
-const AuthLayout = () => {
+function AuthLayout() {
   return (
     <>
       <style>{authLayoutStyles}</style>
+
       <div className="auth-layout">
+
+        {/* LEFT SIDE */}
         <div className="auth-brand">
-          <h1>How it works?</h1>
-          
-          <div className="auth-feature-list">
-            <div className="auth-feature-item">
-              <div className="af-icon-circle af-icon-1">
-                <FiUser />
-              </div>
-              <div className="af-text">
-                Join us
-              </div>
+
+          <div className="brand-content">
+
+            <div className="brand-badge">
+              ✨ FURNITUREKU
             </div>
-            
-            <div className="auth-feature-item">
-              <div className="af-icon-circle af-icon-2">
-                <FiSearch />
-              </div>
-              <div className="af-text">
-                Bring your own talent pool or let us match your posts with the best ones
-              </div>
+
+            <h1 className="brand-title">
+              Furnish Your Dream Home
+            </h1>
+
+            <p className="brand-desc">
+              Temukan furniture premium dengan desain modern,
+              kualitas terbaik, dan kenyamanan maksimal untuk
+              melengkapi rumah impian Anda.
+            </p>
+
+            <div className="showcase-card">
+
+              <img
+                src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=1200"
+                alt="Furniture"
+                className="showcase-image"
+              />
+
+              <h3>Premium Furniture Collection</h3>
+
+              <p>
+                Sofa, meja, kursi, lemari dan berbagai furniture
+                berkualitas tinggi dengan desain elegan untuk
+                rumah modern.
+              </p>
+
             </div>
-            
-            <div className="auth-feature-item">
-              <div className="af-icon-circle af-icon-3">
-                <FiPhone />
-              </div>
-              <div className="af-text">
-                Get in touch with the talents with just a few clicks without cold calls or emails
-              </div>
-            </div>
+
           </div>
+
         </div>
 
+        {/* RIGHT SIDE */}
         <div className="auth-form-area">
+
           <div className="auth-form-wrapper">
             <Outlet />
           </div>
+
         </div>
+
       </div>
     </>
   );
-};
+}
 
 export default AuthLayout;
-

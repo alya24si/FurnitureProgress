@@ -15,7 +15,7 @@ const HeaderSection = () => {
   return (
     <Header style={styles.header}>
       <Container style={styles.container}>
-        
+
         {/* Logo */}
         <div style={styles.logo}>
           <Link
@@ -150,7 +150,7 @@ const HeaderSection = () => {
 
           {/* Register */}
           <Link
-            to="/register"
+            to="/register-pilih"
             style={styles.registerBtn}
           >
             Daftar

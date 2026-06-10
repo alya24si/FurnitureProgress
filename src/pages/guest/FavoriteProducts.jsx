@@ -1,68 +1,69 @@
 import Card from '../../Reusable/Card';
 import { FiStar, FiShoppingBag } from 'react-icons/fi';
-
+import { useNavigate } from 'react-router-dom';
 function FavoriteProducts() {
- const favoriteProducts = [
-  {
-    id: 1,
-    name: 'Sofa Scandinavian Premium',
-    category: 'Sofa',
-    price: 'Rp 6.500.000',
-    sold: 198,
-    rating: 4.9,
-    image: 'https://images.pexels.com/photos/1866149/pexels-photo-1866149.jpeg',
-  },
+  const navigate = useNavigate();
+  const favoriteProducts = [
+    {
+      id: 1,
+      name: 'Sofa Scandinavian Premium',
+      category: 'Sofa',
+      price: 'Rp 6.500.000',
+      sold: 198,
+      rating: 4.9,
+      image: 'https://images.pexels.com/photos/1866149/pexels-photo-1866149.jpeg',
+    },
 
-  {
-    id: 2,
-    name: 'Meja Makan Kayu Jati',
-    category: 'Meja Makan',
-    price: 'Rp 4.750.000',
-    sold: 156,
-    rating: 4.8,
-    image: 'https://images.pexels.com/photos/1395967/pexels-photo-1395967.jpeg',
-  },
+    {
+      id: 2,
+      name: 'Meja Makan Kayu Jati',
+      category: 'Meja Makan',
+      price: 'Rp 4.750.000',
+      sold: 156,
+      rating: 4.8,
+      image: 'https://images.pexels.com/photos/1395967/pexels-photo-1395967.jpeg',
+    },
 
-  {
-    id: 3,
-    name: 'Lemari Pakaian Minimalis',
-    category: 'Lemari',
-    price: 'Rp 8.250.000',
-    sold: 121,
-    rating: 4.9,
-    image: 'https://images.pexels.com/photos/271816/pexels-photo-271816.jpeg',
-  },
+    {
+      id: 3,
+      name: 'Lemari Pakaian Minimalis',
+      category: 'Lemari',
+      price: 'Rp 8.250.000',
+      sold: 121,
+      rating: 4.9,
+      image: 'https://images.pexels.com/photos/271816/pexels-photo-271816.jpeg',
+    },
 
-  {
-    id: 4,
-    name: 'Rak Buku Modern',
-    category: 'Rak Buku',
-    price: 'Rp 2.850.000',
-    sold: 184,
-    rating: 4.7,
-    image: 'https://images.pexels.com/photos/159711/books-bookstore-book-reading-159711.jpeg',
-  },
+    {
+      id: 4,
+      name: 'Rak Buku Modern',
+      category: 'Rak Buku',
+      price: 'Rp 2.850.000',
+      sold: 184,
+      rating: 4.7,
+      image: 'https://images.pexels.com/photos/159711/books-bookstore-book-reading-159711.jpeg',
+    },
 
-  {
-    id: 5,
-    name: 'Kursi Santai Premium',
-    category: 'Kursi',
-    price: 'Rp 3.950.000',
-    sold: 143,
-    rating: 4.8,
-    image: 'https://images.pexels.com/photos/276583/pexels-photo-276583.jpeg',
-  },
+    {
+      id: 5,
+      name: 'Kursi Santai Premium',
+      category: 'Kursi',
+      price: 'Rp 3.950.000',
+      sold: 143,
+      rating: 4.8,
+      image: 'https://images.pexels.com/photos/276583/pexels-photo-276583.jpeg',
+    },
 
-  {
-    id: 6,
-    name: 'Tempat Tidur Kayu Solid',
-    category: 'Tempat Tidur',
-    price: 'Rp 9.500.000',
-    sold: 96,
-    rating: 5.0,
-    image: 'https://images.pexels.com/photos/1648768/pexels-photo-1648768.jpeg',
-  },
-];
+    {
+      id: 6,
+      name: 'Tempat Tidur Kayu Solid',
+      category: 'Tempat Tidur',
+      price: 'Rp 9.500.000',
+      sold: 96,
+      rating: 5.0,
+      image: 'https://images.pexels.com/photos/1648768/pexels-photo-1648768.jpeg',
+    },
+  ];
 
   return (
     <div style={styles.container}>
@@ -131,7 +132,12 @@ function FavoriteProducts() {
                   {item.sold} Terjual
                 </div>
 
-                <button style={styles.button}>
+                <button
+                  style={styles.button}
+                  onClick={() =>
+                    navigate(`/favorite-products/${item.id}`)
+                  }
+                >
                   Lihat Detail
                 </button>
               </div>
@@ -202,38 +208,38 @@ const styles = {
   },
 
   image: {
-  width: '100%',
-  height: '260px',
-  objectFit: 'cover',
-  display: 'block',
-},
+    width: '100%',
+    height: '260px',
+    objectFit: 'cover',
+    display: 'block',
+  },
 
   badge: {
-  position: 'absolute',
-  top: '16px',
-  left: '16px',
-  background: '#6D4C41',
-  color: '#fff',
-  padding: '8px 16px',
-  borderRadius: '30px',
-  fontSize: '12px',
-  fontWeight: '700',
-  letterSpacing: '0.5px',
-  textTransform: 'uppercase',
-},
+    position: 'absolute',
+    top: '16px',
+    left: '16px',
+    background: '#6D4C41',
+    color: '#fff',
+    padding: '8px 16px',
+    borderRadius: '30px',
+    fontSize: '12px',
+    fontWeight: '700',
+    letterSpacing: '0.5px',
+    textTransform: 'uppercase',
+  },
 
   content: {
     padding: '20px',
   },
 
   productName: {
-  fontSize: '20px',
-  fontWeight: '700',
-  color: '#3E2723',
-  lineHeight: '1.5',
-  minHeight: '60px',
-  marginBottom: '10px',
-},
+    fontSize: '20px',
+    fontWeight: '700',
+    color: '#3E2723',
+    lineHeight: '1.5',
+    minHeight: '60px',
+    marginBottom: '10px',
+  },
 
   rating: {
     display: 'flex',

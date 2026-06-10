@@ -1,213 +1,314 @@
-import { useState } from 'react';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const PaymentMethod = () => {
+  const navigate = useNavigate();
 
-  const [selectedMethod, setSelectedMethod] = useState('');
+  const [selectedMethod, setSelectedMethod] = useState("");
+  const [product, setProduct] = useState(null);
+  const [qty, setQty] = useState(1);
+
+  useEffect(() => {
+    const selectedProduct = JSON.parse(
+      localStorage.getItem("selectedProduct")
+    );
+
+    if (!selectedProduct) {
+      navigate("/products");
+      return;
+    }
+
+    setProduct(selectedProduct);
+  }, [navigate]);
 
   const methods = [
     {
       id: 1,
-      title: 'Transfer Bank',
-      desc: 'Pembayaran melalui rekening resmi Alya Furniture',
-      detail: 'BCA • BRI • Mandiri',
-      icon: '🏦',
+      title: "Transfer Bank",
+      desc: "Pembayaran melalui rekening resmi",
+      detail: "BCA • BRI • Mandiri",
+      icon: "🏦",
     },
-
     {
       id: 2,
-      title: 'E-Wallet',
-      desc: 'Pembayaran digital cepat & praktis',
-      detail: 'DANA • OVO • GoPay • ShopeePay',
-      icon: '📱',
+      title: "E-Wallet",
+      desc: "Pembayaran digital cepat & praktis",
+      detail: "DANA • OVO • GoPay • ShopeePay",
+      icon: "📱",
     },
-
     {
       id: 3,
-      title: 'QRIS',
-      desc: 'Scan QR untuk pembayaran instan',
-      detail: 'Semua e-wallet support QRIS',
-      icon: '🔳',
+      title: "QRIS",
+      desc: "Scan QR untuk pembayaran instan",
+      detail: "Semua e-wallet support QRIS",
+      icon: "🔳",
     },
-
     {
       id: 4,
-      title: 'Cash On Delivery',
-      desc: 'Bayar langsung saat barang diterima',
-      detail: 'COD tersedia untuk area tertentu',
-      icon: '🚚',
-    }
+      title: "Cash On Delivery",
+      desc: "Bayar saat barang diterima",
+      detail: "COD area tertentu",
+      icon: "🚚",
+    },
   ];
+
+  const handlePayment = () => {
+    if (!selectedMethod) {
+      alert("Pilih metode pembayaran terlebih dahulu");
+      return;
+    }
+
+    const customer = JSON.parse(
+      localStorage.getItem("customer")
+    );
+
+    const orders =
+      JSON.parse(localStorage.getItem("orders")) || [];
+
+    const newOrder = {
+      id: Date.now(),
+      customerName: customer?.name || customer?.email || "Customer",
+      productName: product.title,
+      price: product.price * 15000,
+      quantity: qty,
+      total: product.price * 15000 * qty,
+      paymentMethod: selectedMethod,
+      date: new Date().toLocaleDateString("id-ID"),
+    };
+
+    orders.push(newOrder);
+
+    localStorage.setItem(
+      "orders",
+      JSON.stringify(orders)
+    );
+
+    alert("Pembayaran berhasil!");
+
+    navigate("/");
+  };
+
+  if (!product) return null;
+
+  const totalPrice =
+    product.price * 15000 * qty;
 
   return (
     <div style={styles.container}>
+      <div style={styles.wrapper}>
 
-      <div style={styles.header}>
-        <h1 style={styles.title}>Metode Pembayaran</h1>
+        <h1 style={styles.title}>
+          Checkout Pembayaran
+        </h1>
 
-        <p style={styles.subtitle}>
-          Pilih metode pembayaran favorit Anda
-        </p>
-      </div>
+        {/* PRODUK */}
+        <div style={styles.productCard}>
+          <img
+            src={product.thumbnail}
+            alt={product.title}
+            style={styles.productImage}
+          />
 
-      <div style={styles.cardContainer}>
+          <div>
+            <h2>{product.title}</h2>
 
-        {methods.map((method) => (
-
-          <div
-            key={method.id}
-            onClick={() => setSelectedMethod(method.title)}
-            style={{
-              ...styles.card,
-              border:
-                selectedMethod === method.title
-                  ? '2px solid #7C3AED'
-                  : '2px solid transparent'
-            }}
-          >
-
-            <div style={styles.icon}>
-              {method.icon}
-            </div>
-
-            <h2 style={styles.cardTitle}>
-              {method.title}
-            </h2>
-
-            <p style={styles.cardDesc}>
-              {method.desc}
+            <p style={styles.price}>
+              Rp {(product.price * 15000).toLocaleString("id-ID")}
             </p>
 
-            <div style={styles.detailBox}>
-              {method.detail}
+            <div style={styles.qtyBox}>
+              <label>Jumlah :</label>
+
+              <input
+                type="number"
+                min="1"
+                value={qty}
+                onChange={(e) =>
+                  setQty(Number(e.target.value))
+                }
+                style={styles.qtyInput}
+              />
             </div>
-
           </div>
-        ))}
+        </div>
 
-      </div>
+        {/* PAYMENT */}
+        <h2 style={styles.sectionTitle}>
+          Pilih Metode Pembayaran
+        </h2>
 
-      {selectedMethod && (
-        <div style={styles.selectedBox}>
+        <div style={styles.cardContainer}>
+          {methods.map((method) => (
+            <div
+              key={method.id}
+              onClick={() =>
+                setSelectedMethod(method.title)
+              }
+              style={{
+                ...styles.card,
+                border:
+                  selectedMethod === method.title
+                    ? "2px solid #B76E79"
+                    : "2px solid transparent",
+              }}
+            >
+              <div style={styles.icon}>
+                {method.icon}
+              </div>
 
-          <h2 style={styles.selectedTitle}>
-            Metode Dipilih
-          </h2>
+              <h3>{method.title}</h3>
 
-          <p style={styles.selectedText}>
-            Anda memilih :
-            <span style={styles.selectedMethod}>
-              {' '}{selectedMethod}
-            </span>
+              <p>{method.desc}</p>
+
+              <div style={styles.detailBox}>
+                {method.detail}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* TOTAL */}
+        <div style={styles.summary}>
+          <h2>Total Pembayaran</h2>
+
+          <h1 style={styles.totalPrice}>
+            Rp {totalPrice.toLocaleString("id-ID")}
+          </h1>
+
+          <p>
+            Metode :
+            <strong>
+              {" "}
+              {selectedMethod || "-"}
+            </strong>
           </p>
 
+          <button
+            style={styles.payButton}
+            onClick={handlePayment}
+          >
+            Bayar Sekarang
+          </button>
         </div>
-      )}
 
+      </div>
     </div>
   );
 };
 
 const styles = {
-
   container: {
-    minHeight: '100vh',
-    padding: '60px 30px',
-    background: '#F5F3FF'
+    minHeight: "100vh",
+    background: "#F8F5F2",
+    padding: "40px",
   },
 
-  header: {
-    textAlign: 'center',
-    marginBottom: '50px'
+  wrapper: {
+    maxWidth: "1200px",
+    margin: "0 auto",
   },
 
   title: {
-    fontSize: '48px',
-    fontWeight: '700',
-    color: '#6D28D9',
-    marginBottom: '10px'
+    textAlign: "center",
+    color: "#B76E79",
+    marginBottom: "40px",
   },
 
-  subtitle: {
-    fontSize: '18px',
-    color: '#666'
+  productCard: {
+    background: "#fff",
+    padding: "25px",
+    borderRadius: "20px",
+    display: "flex",
+    gap: "20px",
+    marginBottom: "40px",
+    boxShadow: "0 5px 20px rgba(0,0,0,.08)",
+  },
+
+  productImage: {
+    width: "180px",
+    height: "180px",
+    objectFit: "cover",
+    borderRadius: "15px",
+  },
+
+  price: {
+    color: "#B76E79",
+    fontSize: "24px",
+    fontWeight: "700",
+    marginTop: "10px",
+  },
+
+  qtyBox: {
+    marginTop: "20px",
+  },
+
+  qtyInput: {
+    width: "80px",
+    padding: "10px",
+    marginLeft: "10px",
+    borderRadius: "8px",
+    border: "1px solid #ddd",
+  },
+
+  sectionTitle: {
+    marginBottom: "20px",
+    color: "#5D4037",
   },
 
   cardContainer: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-    gap: '30px',
-    maxWidth: '1200px',
-    margin: '0 auto'
+    display: "grid",
+    gridTemplateColumns:
+      "repeat(auto-fit,minmax(250px,1fr))",
+    gap: "20px",
   },
 
   card: {
-    background: 'white',
-    borderRadius: '30px',
-    padding: '35px',
-    cursor: 'pointer',
-    transition: '0.3s',
-    boxShadow: '0 8px 20px rgba(0,0,0,0.08)'
+    background: "#fff",
+    padding: "20px",
+    borderRadius: "18px",
+    cursor: "pointer",
+    boxShadow: "0 5px 15px rgba(0,0,0,.08)",
   },
 
   icon: {
-    width: '80px',
-    height: '80px',
-    borderRadius: '20px',
-    background: '#EDE9FE',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '40px',
-    marginBottom: '25px'
-  },
-
-  cardTitle: {
-    fontSize: '28px',
-    fontWeight: '700',
-    marginBottom: '15px',
-    color: '#6D28D9'
-  },
-
-  cardDesc: {
-    fontSize: '16px',
-    color: '#666',
-    marginBottom: '20px',
-    lineHeight: '1.6'
+    fontSize: "40px",
+    marginBottom: "15px",
   },
 
   detailBox: {
-    background: '#F3E8FF',
-    padding: '15px',
-    borderRadius: '16px',
-    color: '#6D28D9',
-    fontWeight: '600'
+    marginTop: "10px",
+    background: "#FCEEF1",
+    padding: "10px",
+    borderRadius: "10px",
+    color: "#B76E79",
+    fontWeight: "600",
   },
 
-  selectedBox: {
-    maxWidth: '700px',
-    margin: '50px auto 0',
-    background: 'white',
-    borderRadius: '25px',
-    padding: '30px',
-    textAlign: 'center',
-    boxShadow: '0 8px 20px rgba(0,0,0,0.08)'
+  summary: {
+    marginTop: "40px",
+    background: "#fff",
+    padding: "30px",
+    borderRadius: "20px",
+    textAlign: "center",
+    boxShadow: "0 5px 20px rgba(0,0,0,.08)",
   },
 
-  selectedTitle: {
-    fontSize: '28px',
-    color: '#6D28D9',
-    marginBottom: '15px'
+  totalPrice: {
+    color: "#B76E79",
+    margin: "15px 0",
   },
 
-  selectedText: {
-    fontSize: '18px',
-    color: '#555'
+  payButton: {
+    marginTop: "20px",
+    background: "#B76E79",
+    color: "#fff",
+    border: "none",
+    padding: "15px 40px",
+    borderRadius: "12px",
+    cursor: "pointer",
+    fontSize: "16px",
+    fontWeight: "600",
   },
-
-  selectedMethod: {
-    color: '#6D28D9',
-    fontWeight: '700'
-  }
 };
 
 export default PaymentMethod;

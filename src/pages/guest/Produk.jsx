@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { FiSearch } from "react-icons/fi";
+import { FiSearch, FiShoppingCart } from "react-icons/fi";
 
 function Produk() {
+  const navigate = useNavigate();
+
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
 
@@ -17,6 +19,23 @@ function Produk() {
   const filteredProducts = products.filter((item) =>
     item.title.toLowerCase().includes(search.toLowerCase())
   );
+
+  const handleBuyNow = (product) => {
+    const customer = localStorage.getItem("customer");
+
+    if (!customer) {
+      alert("Silahkan login terlebih dahulu!");
+      navigate("/login-customer");
+      return;
+    }
+
+    localStorage.setItem(
+      "selectedProduct",
+      JSON.stringify(product)
+    );
+
+    navigate("/payment-method");
+  };
 
   return (
     <div>
@@ -38,6 +57,7 @@ function Produk() {
       <div style={styles.grid}>
         {filteredProducts.map((item) => (
           <div key={item.id} style={styles.card}>
+
             <img
               src={item.thumbnail}
               alt={item.title}
@@ -45,6 +65,7 @@ function Produk() {
             />
 
             <div style={styles.cardBody}>
+
               <h3>{item.title}</h3>
 
               <p style={styles.desc}>
@@ -55,48 +76,36 @@ function Produk() {
                 Rp {(item.price * 15000).toLocaleString("id-ID")}
               </h2>
 
-              <Link
-                to={`/products/${item.id}`}
-                style={styles.button}
-              >
-                Lihat Detail
-              </Link>
+              <div style={styles.buttonGroup}>
+
+                <Link
+                  to={`/products/${item.id}`}
+                  style={styles.detailButton}
+                >
+                  Detail
+                </Link>
+
+                <button
+                  style={styles.buyButton}
+                  onClick={() => handleBuyNow(item)}
+                >
+                  <FiShoppingCart />
+                  Beli Sekarang
+                </button>
+
+              </div>
+
             </div>
+
           </div>
         ))}
       </div>
+
     </div>
   );
 }
 
 const styles = {
-  hero: {
-    height: "450px",
-    backgroundImage:
-      "url('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85')",
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-  },
-
-  overlay: {
-    background: "rgba(0,0,0,.45)",
-    height: "100%",
-    color: "#fff",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    padding: "0 10%",
-  },
-
-  heroTitle: {
-    fontSize: "52px",
-    marginBottom: "10px",
-  },
-
-  heroText: {
-    fontSize: "18px",
-  },
-
   searchBox: {
     width: "90%",
     maxWidth: "500px",
@@ -106,7 +115,8 @@ const styles = {
     gap: "10px",
     border: "1px solid #ddd",
     padding: "15px",
-    borderRadius: "10px",
+    borderRadius: "12px",
+    background: "#fff",
   },
 
   input: {
@@ -125,9 +135,9 @@ const styles = {
 
   card: {
     background: "#fff",
-    borderRadius: "15px",
+    borderRadius: "18px",
     overflow: "hidden",
-    boxShadow: "0 4px 15px rgba(0,0,0,.1)",
+    boxShadow: "0 5px 15px rgba(0,0,0,.08)",
     transition: ".3s",
   },
 
@@ -144,20 +154,44 @@ const styles = {
   desc: {
     color: "#666",
     fontSize: "14px",
+    marginTop: "10px",
   },
 
   price: {
-    color: "#8B6B3E",
+    color: "#B76E79",
     margin: "15px 0",
   },
 
-  button: {
-    display: "inline-block",
-    background: "#8B6B3E",
-    color: "#fff",
-    padding: "12px 20px",
-    borderRadius: "8px",
+  buttonGroup: {
+    display: "flex",
+    gap: "10px",
+    marginTop: "20px",
+  },
+
+  detailButton: {
+    flex: 1,
+    textAlign: "center",
     textDecoration: "none",
+    background: "#F6E8EB",
+    color: "#B76E79",
+    padding: "12px",
+    borderRadius: "10px",
+    fontWeight: "600",
+  },
+
+  buyButton: {
+    flex: 1,
+    border: "none",
+    background: "#B76E79",
+    color: "#fff",
+    padding: "12px",
+    borderRadius: "10px",
+    cursor: "pointer",
+    fontWeight: "600",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "8px",
   },
 };
 

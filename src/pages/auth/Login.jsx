@@ -1,151 +1,120 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import InputField from '../../Reusable/InputField';
-import Button from '../../Reusable/Button';
+import { useNavigate } from "react-router-dom";
+import { FiUser, FiShield } from "react-icons/fi";
 
 const Login = () => {
-  const [dataForm, setDataForm] = useState({
-    email: 'emilys',
-    password: 'emilyspass'
-  });
-  const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(false);
-
-    axios
-      .post("https://dummyjson.com/user/login", {
-        username: dataForm.email,
-        password: dataForm.password,
-      })
-      .then((response) => {
-        if (response.status !== 200) {
-          setError(response.data.message);
-          return;
-        }
-        navigate("/admin/dashboard");
-      })
-      .catch((err) => {
-        setError(err.response?.data?.message || err.message || "An error occurred");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setDataForm(prev => ({ ...prev, [name]: value }));
-  };
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.title}>Welcome back</h2>
-      <p style={styles.subtitle}>Welcome back please enter your details</p>
+      <h1 style={styles.title}>
+        Welcome Back
+      </h1>
 
-      <form onSubmit={handleSubmit} style={styles.form}>
-        {error && <div style={styles.error}>{error}</div>}
+      <p style={styles.subtitle}>
+        Silakan pilih jenis akun yang ingin digunakan
+      </p>
 
-        <InputField
-          label="Email"
-          type="text"
-          name="email"
-          value={dataForm.email}
-          onChange={handleChange}
-          placeholder="Enter your email"
-          required
-        />
+      <div style={styles.cards}>
 
-        <InputField
-          label="Password"
-          type="password"
-          name="password"
-          value={dataForm.password}
-          onChange={handleChange}
-          placeholder="............"
-          required
-        />
+        <div style={styles.card}>
+          <div style={styles.iconBox}>
+            <FiShield size={40} />
+          </div>
 
-        <div style={styles.forgotRow}>
-          <a href="#" style={styles.forgotLink}>Forgot password</a>
+          <h2>Admin</h2>
+
+          <p>
+            Kelola customer, produk dan CRM furniture
+          </p>
+
+          <button
+            style={styles.button}
+            onClick={() => navigate("/login-admin")}
+          >
+            Login Admin
+          </button>
         </div>
 
-        <Button type="submit" variant="primary" disabled={loading} style={styles.fullBtn}>
-          {loading ? 'Signing In...' : 'Sign In'}
-        </Button>
+        <div style={styles.card}>
+          <div style={styles.iconBox}>
+            <FiUser size={40} />
+          </div>
 
-        <Button type="button" variant="ghost" style={styles.fullBtn}>
-          Sign in with Google
-        </Button>
-      </form>
+          <h2>Customer</h2>
 
-      <p style={styles.footerText}>
-        Don't have an account. <a href="#" style={styles.cyanLink}>Sign in</a>
-      </p>
+          <p>
+            Jelajahi produk furniture premium
+          </p>
+
+          <button
+            style={styles.button}
+            onClick={() => navigate("/login-customer")}
+          >
+            Login Customer
+          </button>
+        </div>
+
+      </div>
     </div>
   );
 };
 
 const styles = {
   container: {
-    width: '100%',
-    fontFamily: 'Inter, sans-serif',
+    textAlign: "center",
+    padding: "20px",
   },
+
   title: {
-    fontSize: '26px',
-    fontWeight: '700',
-    color: '#111827',
-    margin: '0 0 8px 0',
+    fontSize: "36px",
+    color: "#5C3D2E",
+    marginBottom: "10px",
   },
+
   subtitle: {
-    fontSize: '13px',
-    color: '#9CA3AF',
-    margin: '0 0 32px 0',
+    color: "#9B7B7B",
+    marginBottom: "40px",
   },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '12px',
+
+  cards: {
+    display: "flex",
+    gap: "25px",
+    justifyContent: "center",
+    flexWrap: "wrap",
   },
-  forgotRow: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    marginBottom: '4px',
+
+  card: {
+    width: "300px",
+    padding: "30px",
+    borderRadius: "25px",
+    background: "#fff",
+    boxShadow: "0 10px 30px rgba(183,110,121,.15)",
+    transition: ".3s",
   },
-  forgotLink: {
-    fontSize: '12px',
-    color: '#4FC3F7',
-    textDecoration: 'none',
-    fontWeight: '500',
+
+  iconBox: {
+    width: "80px",
+    height: "80px",
+    borderRadius: "50%",
+    margin: "0 auto 20px",
+    background: "#F8E8EA",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "#B76E79",
   },
-  fullBtn: {
-    width: '100%',
-    padding: '12px',
+
+  button: {
+    width: "100%",
+    marginTop: "20px",
+    padding: "12px",
+    border: "none",
+    borderRadius: "12px",
+    background: "#B76E79",
+    color: "#fff",
+    cursor: "pointer",
+    fontWeight: "600",
   },
-  footerText: {
-    marginTop: '40px',
-    textAlign: 'center',
-    fontSize: '12px',
-    color: '#9CA3AF',
-  },
-  cyanLink: {
-    color: '#4FC3F7',
-    textDecoration: 'none',
-    fontWeight: '500',
-  },
-  error: {
-    backgroundColor: '#fef2f2',
-    color: '#dc2626',
-    padding: '12px',
-    borderRadius: '6px',
-    fontSize: '13px',
-    border: '1px solid #fecaca',
-  }
 };
 
 export default Login;
