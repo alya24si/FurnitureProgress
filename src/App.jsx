@@ -176,8 +176,8 @@ function App() {
               <Route path="/admin/customers" element={<Customers />} />
               <Route path="/customers/:id" element={<CustomerDetail />} />
               <Route path="/orders/:id" element={<OrderDetail />} />
-              <Route path="/users" element={<Users />} />
-              <Route path="/users/:abc" element={<UserDetail />} />
+              <Route path="/admin/users" element={<Users />} />
+              <Route path="/admin/users/:id" element={<UserDetail />} />
               <Route path="/sales-report" element={<SalesReport />} />
               <Route path="/admin/membership-crm" element={<MembershipCRM />} />
               <Route path="/admin/membership-crm/:id" element={<MembershipDetail />} />

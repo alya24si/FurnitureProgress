@@ -4,7 +4,8 @@ import {
   FiBox,
   FiUsers,
   FiTrendingUp,
-  FiMoreVertical
+  FiMoreVertical,
+  FiUser
 } from 'react-icons/fi';
 
 import SidebarReusable from '../Reusable/Sidebar';
@@ -237,6 +238,19 @@ const Sidebar = ({ search = "" }) => {
             <span>Membership</span>
           </NavLink>
 
+          {/* USERS */}
+          <NavLink
+            to="/admin/users"
+            className={({ isActive }) =>
+              `nav-item${(isActive || keyword.includes("user")) ? ' active' : ''}`
+            }
+          >
+            <FiUser className="nav-icon" />
+            <span>Users</span>
+          </NavLink>
+
+
+
           {/* FEEDBACK */}
           <NavLink
             to="/admin/feedback"
@@ -259,16 +273,7 @@ const Sidebar = ({ search = "" }) => {
             <span>Analytics</span>
           </NavLink>
 
-          {/* CAMPAIGN */}
-          <NavLink
-            to="/admin/campaign"
-            className={({ isActive }) =>
-              `nav-item${(isActive || keyword.includes("campaign")) ? ' active' : ''}`
-            }
-          >
-            <FiTrendingUp className="nav-icon" />
-            <span>Campaign</span>
-          </NavLink>
+
 
           {/* SALES REPORT */}
           <NavItem

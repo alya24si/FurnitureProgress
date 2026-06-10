@@ -1,404 +1,353 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FiMoreVertical, FiSearch } from 'react-icons/fi';
-import Modal from '../../Reusable/Modal';
-import Button from '../../Reusable/Button';
-import Table from '../../Reusable/Table';
+import { useEffect, useState } from "react";
+import { supabase } from "../../services/supabase";
 
-function Users() {
+export default function Users() {
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [search, setSearch] = useState('');
-  const [showAddModal, setShowAddModal] = useState(false);
-  const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [editId, setEditId] = useState(null);
+
+  const styles = {
+    container: {
+      padding: "30px",
+      background: "#FFF8F7",
+      minHeight: "100vh",
+    },
+
+    title: {
+      color: "#B76E79",
+      fontSize: "30px",
+      fontWeight: "700",
+      marginBottom: "20px",
+    },
+
+    card: {
+      background: "#FFFFFF",
+      borderRadius: "20px",
+      padding: "25px",
+      boxShadow: "0 4px 15px rgba(183,110,121,0.15)",
+      marginBottom: "25px",
+    },
+
+    formRow: {
+      display: "flex",
+      gap: "15px",
+      flexWrap: "wrap",
+      alignItems: "center",
+    },
+
+    input: {
+      flex: 1,
+      minWidth: "250px",
+      padding: "12px 15px",
+      borderRadius: "10px",
+      border: "1px solid #E8C4C4",
+      outline: "none",
+      fontSize: "14px",
+    },
+
+    addButton: {
+      background: "#B76E79",
+      color: "#fff",
+      border: "none",
+      borderRadius: "10px",
+      padding: "12px 20px",
+      cursor: "pointer",
+      fontWeight: "600",
+    },
+
+    cancelButton: {
+      background: "#6C757D",
+      color: "#fff",
+      border: "none",
+      borderRadius: "10px",
+      padding: "12px 20px",
+      cursor: "pointer",
+      fontWeight: "600",
+    },
+
+    tableCard: {
+      background: "#fff",
+      borderRadius: "20px",
+      overflow: "hidden",
+      boxShadow: "0 4px 15px rgba(183,110,121,0.15)",
+    },
+
+    table: {
+      width: "100%",
+      borderCollapse: "collapse",
+    },
+
+    th: {
+      background: "#B76E79",
+      color: "#fff",
+      padding: "15px",
+      textAlign: "left",
+      fontWeight: "600",
+    },
+
+    td: {
+      padding: "15px",
+      borderBottom: "1px solid #F3D9DD",
+    },
+
+    actionGroup: {
+      display: "flex",
+      gap: "8px",
+    },
+
+    editButton: {
+      background: "#B76E79",
+      color: "#fff",
+      border: "none",
+      borderRadius: "8px",
+      padding: "8px 14px",
+      cursor: "pointer",
+    },
+
+    deleteButton: {
+      background: "#DC3545",
+      color: "#fff",
+      border: "none",
+      borderRadius: "8px",
+      padding: "8px 14px",
+      cursor: "pointer",
+    },
+
+    empty: {
+      textAlign: "center",
+      padding: "25px",
+      color: "#999",
+    },
+
+    totalUser: {
+      color: "#B76E79",
+      marginBottom: "15px",
+      fontWeight: "600",
+      fontSize: "16px",
+    },
+  };
+
+  const getUsers = async () => {
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!error) {
+      setUsers(data || []);
+    }
+  };
 
   useEffect(() => {
-    fetch('https://dummyjson.com/users')
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      })
-      .then((data) => {
-        setUsers(data.users || []);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
+    getUsers();
   }, []);
 
-  const filtered = users.filter((u) => {
-    const q = search.toLowerCase();
-    return (
-      u.firstName.toLowerCase().includes(q) ||
-      u.lastName.toLowerCase().includes(q) ||
-      u.email.toLowerCase().includes(q) ||
-      u.username.toLowerCase().includes(q)
+  const addUser = async () => {
+    if (!name || !email) {
+      alert("Nama dan Email wajib diisi");
+      return;
+    }
+
+    const { error } = await supabase
+      .from("users")
+      .insert([
+        {
+          name,
+          email,
+        },
+      ]);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    setName("");
+    setEmail("");
+    getUsers();
+  };
+
+  const handleEdit = (user) => {
+    setEditId(user.id);
+    setName(user.name);
+    setEmail(user.email);
+  };
+
+  const updateUser = async () => {
+    if (!name || !email) {
+      alert("Nama dan Email wajib diisi");
+      return;
+    }
+
+    const { error } = await supabase
+      .from("users")
+      .update({
+        name,
+        email,
+      })
+      .eq("id", editId);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    setEditId(null);
+    setName("");
+    setEmail("");
+
+    getUsers();
+  };
+
+  const cancelEdit = () => {
+    setEditId(null);
+    setName("");
+    setEmail("");
+  };
+
+  const deleteUser = async (id) => {
+    const confirmDelete = window.confirm(
+      "Yakin ingin menghapus user ini?"
     );
-  });
+
+    if (!confirmDelete) return;
+
+    const { error } = await supabase
+      .from("users")
+      .delete()
+      .eq("id", id);
+
+    if (!error) {
+      getUsers();
+    }
+  };
 
   return (
-    <>
-      <style>{tableStyles}</style>
+    <div style={styles.container}>
+      <h1 style={styles.title}>
+        👤 User Management
+      </h1>
 
-      {error && (
-        <div style={styles.error}>Gagal memuat data: {error}</div>
-      )}
+      <div style={styles.card}>
+        <div style={styles.formRow}>
+          <input
+            type="text"
+            placeholder="Masukkan Nama"
+            value={name}
+            onChange={(e) =>
+              setName(e.target.value)
+            }
+            style={styles.input}
+          />
 
-      <div className="table-container">
-        {/* Header Section mimicking the image */}
-        <div className="table-header-section">
-          <div>
-            <h1 className="table-main-title">Users list</h1>
-            <p className="table-sub-title">
-              Manage your users, roles, and permissions.
-            </p>
-          </div>
-          <button className="btn-download-all-top" onClick={() => setShowAddModal(true)}>Add user</button>
-        </div>
+          <input
+            type="email"
+            placeholder="Masukkan Email"
+            value={email}
+            onChange={(e) =>
+              setEmail(e.target.value)
+            }
+            style={styles.input}
+          />
 
-        <div className="table-search-row">
-           <div style={styles.searchWrapper}>
-             <FiSearch style={styles.searchIcon} size={16} />
-             <input
-               type="text"
-               placeholder="Search users..."
-               value={search}
-               onChange={(e) => setSearch(e.target.value)}
-               style={styles.searchInput}
-             />
-           </div>
-        </div>
+          {editId ? (
+            <>
+              <button
+                style={styles.addButton}
+                onClick={updateUser}
+              >
+                Simpan
+              </button>
 
-        <div style={{ overflowX: 'auto' }}>
-          <Table className="theme-table">
-            <thead>
-              <tr>
-                <th style={{ width: 48, paddingLeft: 24 }}>
-                  <input type="checkbox" className="custom-checkbox" />
-                </th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Gender</th>
-                <th>Age</th>
-                <th style={{ width: 140, textAlign: 'right', paddingRight: 24 }}></th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading &&
-                [...Array(6)].map((_, i) => (
-                  <tr key={`sk-${i}`} className="skeleton-row">
-                    <td colSpan={7}>
-                      <div className="skeleton-bar" />
-                    </td>
-                  </tr>
-                ))}
-
-              {!loading &&
-                filtered.map((user, i) => (
-                  <tr key={user.id} onClick={() => navigate(`/users/${user.id}`)}>
-                    <td style={{ paddingLeft: 24 }} onClick={(e) => e.stopPropagation()}>
-                      <input 
-                        type="checkbox" 
-                        className="custom-checkbox" 
-                        defaultChecked={i % 2 !== 0}
-                      />
-                    </td>
-                    <td>
-                      <div className="user-info-cell">
-                        <img src={user.image} alt={user.firstName} className="user-avatar-img" />
-                        <span className="user-name-text">
-                          {user.firstName} {user.lastName}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="text-gray">{user.email}</td>
-                    <td className="text-gray">{user.phone}</td>
-                    <td className="text-gray capitalize">{user.gender}</td>
-                    <td className="text-gray">{user.age} Years</td>
-                    <td style={{ paddingRight: 24, textAlign: 'right' }}>
-                      <div className="action-cell">
-                        <button 
-                          className="btn-action-row" 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/users/${user.id}`);
-                          }}
-                        >
-                          View details
-                        </button>
-                        <button className="btn-icon" onClick={(e) => e.stopPropagation()}>
-                          <FiMoreVertical size={20} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-
-              {!loading && !error && filtered.length === 0 && (
-                <tr>
-                  <td colSpan={7} className="empty-state">
-                    Tidak ada user yang cocok dengan pencarian.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </Table>
+              <button
+                style={styles.cancelButton}
+                onClick={cancelEdit}
+              >
+                Batal
+              </button>
+            </>
+          ) : (
+            <button
+              style={styles.addButton}
+              onClick={addUser}
+            >
+              + Tambah User
+            </button>
+          )}
         </div>
       </div>
 
-      <Modal
-        isOpen={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        title="Tambah User Baru"
-      >
-        <p style={{ marginBottom: '20px', color: '#475467' }}>
-          Fitur tambah user belum tersedia. Klik tombol di bawah untuk menutup dialog ini.
-        </p>
-        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-          <Button variant="ghost" onClick={() => setShowAddModal(false)}>
-            Batal
-          </Button>
-          <Button variant="admin" onClick={() => setShowAddModal(false)}>
-            OK
-          </Button>
-        </div>
-      </Modal>
-    </>
+      <div style={styles.totalUser}>
+        Total User : {users.length}
+      </div>
+
+      <div style={styles.tableCard}>
+        <table style={styles.table}>
+          <thead>
+            <tr>
+              <th style={styles.th}>Nama</th>
+              <th style={styles.th}>Email</th>
+              <th style={styles.th}>Aksi</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {users.length > 0 ? (
+              users.map((user) => (
+                <tr key={user.id}>
+                  <td style={styles.td}>
+                    {user.name}
+                  </td>
+
+                  <td style={styles.td}>
+                    {user.email}
+                  </td>
+
+                  <td style={styles.td}>
+                    <div
+                      style={
+                        styles.actionGroup
+                      }
+                    >
+                      <button
+                        style={
+                          styles.editButton
+                        }
+                        onClick={() =>
+                          handleEdit(user)
+                        }
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        style={
+                          styles.deleteButton
+                        }
+                        onClick={() =>
+                          deleteUser(user.id)
+                        }
+                      >
+                        Hapus
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan="3"
+                  style={styles.empty}
+                >
+                  Belum ada data user
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }
-
-const styles = {
-  searchWrapper: {
-    position: 'relative',
-    width: '100%',
-    maxWidth: '320px',
-  },
-  searchIcon: {
-    position: 'absolute',
-    left: '14px',
-    top: '50%',
-    transform: 'translateY(-50%)',
-    color: '#9ca3af',
-    pointerEvents: 'none',
-  },
-  searchInput: {
-    width: '100%',
-    padding: '8px 14px 8px 40px',
-    background: '#fff',
-    border: '1px solid #eaecf0',
-    borderRadius: '6px',
-    outline: 'none',
-    fontSize: '14px',
-    color: '#374151',
-  },
-  error: {
-    background: '#fef2f2',
-    color: '#dc2626',
-    padding: '14px 16px',
-    borderRadius: '8px',
-    border: '1px solid #fecaca',
-    marginBottom: '16px',
-    fontSize: '14px',
-  },
-};
-
-const tableStyles = `
-  /* Theme matching the provided image */
-  .table-container {
-    background: #ffffff;
-    border: 1px solid #eaecf0;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(16, 24, 40, 0.05);
-    overflow: hidden;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  }
-
-  .table-header-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 24px;
-    border-bottom: 1px solid #eaecf0;
-  }
-
-  .table-main-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: #101828;
-    margin: 0 0 4px 0;
-  }
-
-  .table-sub-title {
-    font-size: 14px;
-    color: #667085;
-    margin: 0;
-  }
-
-  .btn-download-all-top {
-    background: #7a5af8;
-    color: #ffffff;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-
-  .btn-download-all-top:hover {
-    background: #6941c6;
-  }
-
-  .table-search-row {
-    padding: 16px 24px;
-    border-bottom: 1px solid #eaecf0;
-    background: #fcfcfd;
-  }
-
-  .theme-table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: left;
-  }
-
-  .theme-table thead th {
-    padding: 12px 16px;
-    font-size: 14px;
-    font-weight: 500;
-    color: #475467;
-    background: #ffffff;
-    border-bottom: 1px solid #eaecf0;
-  }
-
-  .theme-table tbody tr {
-    border-bottom: 1px solid #eaecf0;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-
-  .theme-table tbody tr:hover {
-    background: #f9fafb;
-  }
-
-  .theme-table tbody tr:last-child {
-    border-bottom: none;
-  }
-
-  .theme-table tbody td {
-    padding: 16px;
-    font-size: 14px;
-    color: #101828;
-    vertical-align: middle;
-  }
-
-  /* Custom Checkbox */
-  .custom-checkbox {
-    width: 18px;
-    height: 18px;
-    border: 1px solid #d0d5dd;
-    border-radius: 4px;
-    cursor: pointer;
-    accent-color: #6941c6;
-  }
-
-  /* User Info Cell */
-  .user-info-cell {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .user-avatar-img {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: #f2f4f7;
-    object-fit: cover;
-  }
-
-  .user-name-text {
-    font-weight: 500;
-    color: #101828;
-  }
-
-  /* Text Colors */
-  .text-gray {
-    color: #475467 !important;
-  }
-  
-  .capitalize {
-    text-transform: capitalize;
-  }
-
-  /* Action Buttons */
-  .action-cell {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 12px;
-  }
-
-  .btn-action-row {
-    background: #344054;
-    color: #ffffff;
-    border: none;
-    padding: 8px 14px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-
-  .btn-action-row:hover {
-    background: #1d2939;
-  }
-
-  .btn-icon {
-    background: transparent;
-    border: none;
-    color: #98a2b3;
-    cursor: pointer;
-    padding: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-  }
-
-  .btn-icon:hover {
-    background: #f2f4f7;
-    color: #344054;
-  }
-
-  .empty-state {
-    text-align: center;
-    padding: 32px !important;
-    color: #667085 !important;
-  }
-
-  /* Skeleton Loading */
-  .skeleton-row td {
-    padding: 20px 16px !important;
-  }
-
-  .skeleton-bar {
-    height: 20px;
-    border-radius: 4px;
-    background: linear-gradient(90deg, #f2f4f7 25%, #eaecf0 50%, #f2f4f7 75%);
-    background-size: 200% 100%;
-    animation: pulse 1.5s infinite;
-  }
-
-  @keyframes pulse {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-  }
-`;
-
-export default Users;
