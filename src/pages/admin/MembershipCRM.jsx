@@ -1,148 +1,355 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../../services/supabase";
 
 function MembershipCRM() {
   const navigate = useNavigate();
 
-  const members = [
-  {
-    id: "MBR001",
-    name: "Alya Deka",
-    type: "Gold",
-    email: "alya@gmail.com",
-    status: "Aktif",
-  },
-  {
-    id: "MBR002",
-    name: "Rehan",
-    type: "Silver",
-    email: "rehan@gmail.com",
-    status: "Menunggu",
-  },
+  const [members, setMembers] = useState([]);
+  const [search, setSearch] = useState("");
+  const [showForm, setShowForm] = useState(false);
 
-  // GOLD MEMBER (45)
-  ...Array.from({ length: 44 }, (_, i) => ({
-    id: `MBR${String(i + 3).padStart(3, "0")}`,
-    name: `Gold Member ${i + 1}`,
-    type: "Gold",
-    email: `gold${i + 1}@gmail.com`,
-    status: "Aktif",
-  })),
+  const [editId, setEditId] = useState(null);
 
-  // SILVER MEMBER (35)
-  ...Array.from({ length: 34 }, (_, i) => ({
-    id: `MBR${String(i + 47).padStart(3, "0")}`,
-    name: `Silver Member ${i + 1}`,
-    type: "Silver",
-    email: `silver${i + 1}@gmail.com`,
-    status: i % 5 === 0 ? "Menunggu" : "Aktif",
-  })),
+  // ===================== VOUCHER STATE (TETAP ADA) =====================
+  const [voucherType, setVoucherType] = useState("Gold");
+  const [voucherCode, setVoucherCode] = useState("");
 
-  // BRONZE MEMBER (20)
-  ...Array.from({ length: 19 }, (_, i) => ({
-    id: `MBR${String(i + 81).padStart(3, "0")}`,
-    name: `Bronze Member ${i + 1}`,
-    type: "Bronze",
-    email: `bronze${i + 1}@gmail.com`,
-    status: i % 4 === 0 ? "Menunggu" : "Aktif",
-  })),
-];
+  const [newMember, setNewMember] = useState({
+    member_code: "",
+    full_name: "",
+    email: "",
+    phone: "",
+    address: "",
+    gender: "Laki-laki",
+    membership_type: "Gold",
+  });
+
+  // ===================== GET =====================
+  const getMembers = async () => {
+    const { data, error } = await supabase
+      .from("memberships")
+      .select("*")
+      .order("id", { ascending: false });
+
+    if (error) {
+      console.log("GET ERROR:", error.message);
+      return;
+    }
+
+    setMembers(data || []);
+  };
+
+  useEffect(() => {
+    getMembers();
+
+    const channel = supabase
+      .channel("membership-realtime")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "memberships",
+        },
+        () => {
+          getMembers();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  // ===================== RESET =====================
+  const resetForm = () => {
+    setNewMember({
+      member_code: "",
+      full_name: "",
+      email: "",
+      phone: "",
+      address: "",
+      gender: "Laki-laki",
+      membership_type: "Gold",
+    });
+  };
+
+  // ===================== CREATE =====================
+  const addMember = async () => {
+    if (!newMember.member_code || !newMember.full_name || !newMember.email) {
+      alert("Lengkapi data!");
+      return;
+    }
+
+    const { error } = await supabase.from("memberships").insert([
+      {
+        ...newMember,
+        status: "Aktif",
+      },
+    ]);
+
+    if (error) {
+      alert("Gagal tambah: " + error.message);
+      return;
+    }
+
+    resetForm();
+    setShowForm(false);
+    getMembers();
+  };
+
+  // ===================== DELETE (FIX) =====================
+  const deleteMember = async (id) => {
+    const ok = window.confirm("Yakin hapus member?");
+    if (!ok) return;
+
+    const { error } = await supabase
+      .from("memberships")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      alert("Gagal hapus: " + error.message);
+      return;
+    }
+
+    getMembers();
+  };
+
+  // ===================== EDIT =====================
+  const handleEdit = (member) => {
+    setEditId(member.id);
+    setShowForm(true);
+
+    setNewMember({
+      member_code: member.member_code,
+      full_name: member.full_name,
+      email: member.email,
+      phone: member.phone,
+      address: member.address,
+      gender: member.gender,
+      membership_type: member.membership_type,
+    });
+  };
+
+  // ===================== UPDATE =====================
+  const updateMember = async () => {
+    const { error } = await supabase
+      .from("memberships")
+      .update({
+        ...newMember,
+      })
+      .eq("id", editId);
+
+    if (error) {
+      alert("Gagal update: " + error.message);
+      return;
+    }
+
+    setEditId(null);
+    setShowForm(false);
+    resetForm();
+    getMembers();
+  };
+
+  // ===================== VOUCHER (TIDAK DIHAPUS) =====================
+  const sendVoucher = async () => {
+    if (!voucherCode) {
+      alert("Masukkan kode voucher");
+      return;
+    }
+
+    const receivers = members.filter(
+      (item) => item.membership_type === voucherType
+    );
+
+    alert(
+      `Voucher ${voucherCode} dikirim ke ${receivers.length} member ${voucherType}`
+    );
+  };
+
+  // ===================== FILTER =====================
+  const filteredMembers = members.filter(
+    (m) =>
+      m.full_name?.toLowerCase().includes(search.toLowerCase()) ||
+      m.email?.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div style={styles.container}>
+      {/* HEADER */}
       <div style={styles.header}>
         <h1 style={styles.title}>Kelola Membership</h1>
 
-        <p style={styles.subtitle}>
-          Kelola data member, persetujuan membership, dan pemberian
-          diskon pelanggan FurnitureKu.
-        </p>
+        <button
+          style={styles.addBtn}
+          onClick={() => setShowForm(!showForm)}
+        >
+          + Tambah Member
+        </button>
       </div>
 
-      {/* Statistik */}
-      {/* <div style={styles.statsGrid}>
-        <div style={styles.statCard}>
-          <h2 style={styles.statNumber}>120</h2>
-          <p style={styles.statLabel}>Total Member</p>
-        </div>
+      {/* FORM */}
+      {showForm && (
+        <div style={styles.formCard}>
+          <h3>{editId ? "Edit Member" : "Tambah Member"}</h3>
 
-        <div style={styles.statCard}>
-          <h2 style={styles.statNumber}>95</h2>
-          <p style={styles.statLabel}>Member Aktif</p>
-        </div>
+          <input
+            placeholder="Kode"
+            style={styles.input}
+            value={newMember.member_code}
+            onChange={(e) =>
+              setNewMember({ ...newMember, member_code: e.target.value })
+            }
+          />
 
-        <div style={styles.statCard}>
-          <h2 style={styles.statNumber}>25</h2>
-          <p style={styles.statLabel}>Pending</p>
-        </div>
+          <input
+            placeholder="Nama"
+            style={styles.input}
+            value={newMember.full_name}
+            onChange={(e) =>
+              setNewMember({ ...newMember, full_name: e.target.value })
+            }
+          />
 
-        <div style={styles.statCard}>
-          <h2 style={styles.statNumber}>30</h2>
-          <p style={styles.statLabel}>Gold Member</p>
-        </div>
-      </div> */}
+          <input
+            placeholder="Email"
+            style={styles.input}
+            value={newMember.email}
+            onChange={(e) =>
+              setNewMember({ ...newMember, email: e.target.value })
+            }
+          />
 
-      {/* Search */}
-      <div style={styles.searchWrapper}>
-        <input
-          type="text"
-          placeholder="Cari member berdasarkan nama atau email..."
-          style={styles.searchInput}
-        />
+          <input
+            placeholder="Phone"
+            style={styles.input}
+            value={newMember.phone}
+            onChange={(e) =>
+              setNewMember({ ...newMember, phone: e.target.value })
+            }
+          />
+
+          <input
+            placeholder="Alamat"
+            style={styles.input}
+            value={newMember.address}
+            onChange={(e) =>
+              setNewMember({ ...newMember, address: e.target.value })
+            }
+          />
+
+          {/* GENDER DROPDOWN (FIX YANG KAMU MINTA) */}
+          <select
+            style={styles.input}
+            value={newMember.gender}
+            onChange={(e) =>
+              setNewMember({ ...newMember, gender: e.target.value })
+            }
+          >
+            <option value="Laki-laki">Laki-laki</option>
+            <option value="Perempuan">Perempuan</option>
+          </select>
+
+          <select
+            style={styles.input}
+            value={newMember.membership_type}
+            onChange={(e) =>
+              setNewMember({
+                ...newMember,
+                membership_type: e.target.value,
+              })
+            }
+          >
+            <option>Gold</option>
+            <option>Silver</option>
+            <option>Bronze</option>
+          </select>
+
+          <button
+            style={styles.saveBtn}
+            onClick={editId ? updateMember : addMember}
+          >
+            {editId ? "Update" : "Simpan"}
+          </button>
+        </div>
+      )}
+
+      {/* ===================== VOUCHER (INI TETAP ADA) ===================== */}
+      <div style={styles.voucherCard}>
+        <h3>Kirim Voucher</h3>
+
+        <div style={styles.voucherRow}>
+          <select
+            style={styles.input}
+            value={voucherType}
+            onChange={(e) => setVoucherType(e.target.value)}
+          >
+            <option>Gold</option>
+            <option>Silver</option>
+            <option>Bronze</option>
+          </select>
+
+          <input
+            placeholder="Kode Voucher"
+            style={styles.input}
+            value={voucherCode}
+            onChange={(e) => setVoucherCode(e.target.value)}
+          />
+
+          <button style={styles.voucherBtn} onClick={sendVoucher}>
+            Kirim Voucher
+          </button>
+        </div>
       </div>
 
-      {/* Tabel */}
+      {/* TABLE */}
       <div style={styles.tableCard}>
         <table style={styles.table}>
           <thead>
             <tr>
-              <th style={styles.th}>ID</th>
+              <th style={styles.th}>Kode</th>
               <th style={styles.th}>Nama</th>
               <th style={styles.th}>Email</th>
+              <th style={styles.th}>Gender</th>
               <th style={styles.th}>Level</th>
-              <th style={styles.th}>Status</th>
               <th style={styles.th}>Aksi</th>
             </tr>
           </thead>
 
           <tbody>
-            {members.map((member) => (
-              <tr key={member.id}>
-                <td style={styles.td}>{member.id}</td>
-
-                <td style={styles.td}>
-                  <strong>{member.name}</strong>
-                </td>
-
-                <td style={styles.td}>{member.email}</td>
-
-                <td style={styles.td}>
-                  <span style={styles.levelBadge}>
-                    {member.type}
-                  </span>
-                </td>
-
-                <td style={styles.td}>
-                  <span
-                    style={
-                      member.status === "Aktif"
-                        ? styles.activeBadge
-                        : styles.pendingBadge
-                    }
-                  >
-                    {member.status}
-                  </span>
-                </td>
+            {filteredMembers.map((m) => (
+              <tr key={m.id}>
+                <td style={styles.td}>{m.member_code}</td>
+                <td style={styles.td}>{m.full_name}</td>
+                <td style={styles.td}>{m.email}</td>
+                <td style={styles.td}>{m.gender}</td>
+                <td style={styles.td}>{m.membership_type}</td>
 
                 <td style={styles.td}>
                   <button
                     style={styles.manageBtn}
                     onClick={() =>
-                      navigate(
-                        `/admin/membership-crm/${member.id}`
-                      )
+                      navigate(`/admin/membership-crm/${m.id}`)
                     }
                   >
                     Kelola
+                  </button>
+
+                  <button
+                    style={styles.editBtn}
+                    onClick={() => handleEdit(m)}
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    style={styles.deleteBtn}
+                    onClick={() => deleteMember(m.id)}
+                  >
+                    Hapus
                   </button>
                 </td>
               </tr>
@@ -154,136 +361,90 @@ function MembershipCRM() {
   );
 }
 
+// ===================== STYLES =====================
 const styles = {
-  container: {
-    padding: "30px",
-    background: "#F8F5F0",
-    minHeight: "100vh",
-  },
+  container: { padding: 30, background: "#F8F5F0" },
+  header: { display: "flex", justifyContent: "space-between" },
+  title: { color: "#5D4037" },
 
-  header: {
-    marginBottom: "30px",
-  },
-
-  title: {
-    fontSize: "34px",
-    fontWeight: "700",
-    color: "#5D4037",
-    marginBottom: "10px",
-  },
-
-  subtitle: {
-    color: "#6B7280",
-    fontSize: "15px",
-    maxWidth: "700px",
-  },
-
-  statsGrid: {
-    display: "grid",
-    gridTemplateColumns:
-      "repeat(auto-fit, minmax(220px, 1fr))",
-    gap: "20px",
-    marginBottom: "30px",
-  },
-
-  statCard: {
-    background: "#fff",
-    padding: "25px",
-    borderRadius: "20px",
-    textAlign: "center",
-    boxShadow: "0 8px 25px rgba(0,0,0,.08)",
-  },
-
-  statNumber: {
-    fontSize: "32px",
-    color: "#8B5E3C",
-    margin: 0,
-    fontWeight: "700",
-  },
-
-  statLabel: {
-    marginTop: "10px",
-    color: "#6B7280",
-    fontSize: "14px",
-  },
-
-  searchWrapper: {
-    marginBottom: "25px",
-  },
-
-  searchInput: {
-    width: "100%",
-    maxWidth: "400px",
-    padding: "14px 18px",
-    borderRadius: "12px",
-    border: "1px solid #D1D5DB",
-    outline: "none",
-    fontSize: "14px",
-    background: "#fff",
-  },
-
-  tableCard: {
-    background: "#fff",
-    borderRadius: "20px",
-    overflow: "hidden",
-    boxShadow: "0 8px 25px rgba(0,0,0,.08)",
-  },
-
-  table: {
-    width: "100%",
-    borderCollapse: "collapse",
-  },
-
-  th: {
-    background: "#5D4037",
+  addBtn: {
+    background: "#16A34A",
     color: "#fff",
-    padding: "18px",
-    textAlign: "left",
-    fontSize: "14px",
-    fontWeight: "600",
+    padding: 12,
+    borderRadius: 10,
   },
 
-  td: {
-    padding: "18px",
-    borderBottom: "1px solid #F3F4F6",
-    fontSize: "14px",
+  formCard: {
+    background: "#fff",
+    padding: 20,
+    marginTop: 20,
+    display: "grid",
+    gap: 10,
   },
 
-  levelBadge: {
-    background: "#FEF3C7",
-    color: "#92400E",
-    padding: "6px 12px",
-    borderRadius: "999px",
-    fontSize: "12px",
-    fontWeight: "600",
+  voucherCard: {
+    background: "#fff",
+    padding: 20,
+    marginTop: 20,
   },
 
-  activeBadge: {
-    background: "#DCFCE7",
-    color: "#166534",
-    padding: "6px 12px",
-    borderRadius: "999px",
-    fontSize: "12px",
-    fontWeight: "600",
+  voucherRow: {
+    display: "flex",
+    gap: 10,
   },
 
-  pendingBadge: {
-    background: "#FEE2E2",
-    color: "#B91C1C",
-    padding: "6px 12px",
-    borderRadius: "999px",
-    fontSize: "12px",
-    fontWeight: "600",
+  input: {
+    padding: 12,
+    border: "1px solid #ddd",
+    borderRadius: 10,
   },
+
+  saveBtn: {
+    background: "#16A34A",
+    color: "#fff",
+    padding: 12,
+    borderRadius: 10,
+  },
+
+  voucherBtn: {
+    background: "#2563EB",
+    color: "#fff",
+    padding: 12,
+    borderRadius: 10,
+  },
+
+  tableCard: { background: "#fff", marginTop: 20 },
+
+  table: { width: "100%", borderCollapse: "collapse" },
+
+  th: { background: "#5D4037", color: "#fff", padding: 15 },
+
+  td: { padding: 15, borderBottom: "1px solid #eee" },
 
   manageBtn: {
     background: "#8B5E3C",
     color: "#fff",
+    padding: 8,
+    borderRadius: 8,
     border: "none",
-    padding: "10px 18px",
-    borderRadius: "10px",
-    cursor: "pointer",
-    fontWeight: "600",
+    marginRight: 6,
+  },
+
+  editBtn: {
+    background: "#D8B46A",
+    color: "#fff",
+    padding: 8,
+    borderRadius: 8,
+    border: "none",
+    marginRight: 6,
+  },
+
+  deleteBtn: {
+    background: "#DC2626",
+    color: "#fff",
+    padding: 8,
+    borderRadius: 8,
+    border: "none",
   },
 };
 

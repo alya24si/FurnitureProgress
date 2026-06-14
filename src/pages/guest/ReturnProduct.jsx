@@ -1,249 +1,145 @@
-import { useState } from 'react';
+import { useState } from "react";
+import { supabase } from "../../services/supabase";
 
 const ReturnProduct = () => {
-
   const [form, setForm] = useState({
-    name: '',
-    orderId: '',
-    date: '',
-    reason: ''
+    name: "",
+    orderId: "",
+    date: "",
+    reason: "",
+    file: null,
   });
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value
-    });
+    const { name, value, files } = e.target;
+    if (name === "file") setForm({ ...form, file: files[0] });
+    else setForm({ ...form, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    alert('Pengajuan pengembalian berhasil dikirim!');
+    await supabase.from("feedback_returns").insert([
+      {
+        name: form.name,
+        order_id: form.orderId,
+        date_received: form.date,
+        reason: form.reason,
+        status: "pending",
+      },
+    ]);
+
+    alert("Pengajuan berhasil dikirim!");
   };
 
   return (
-    <div style={styles.container}>
-
+    <div style={styles.page}>
       <div style={styles.card}>
-
-        {/* HEADER */}
         <div style={styles.header}>
-
-          <div style={styles.iconBox}>
-            📦
-          </div>
-
-          <h1 style={styles.title}>
-            Pengajuan Pengembalian Barang
-          </h1>
-
+          <div style={styles.icon}>📦</div>
+          <h1 style={styles.title}>Return Request</h1>
           <p style={styles.subtitle}>
-            Pengajuan hanya dapat dilakukan maksimal
-            <span style={styles.highlight}> 3 hari </span>
-            setelah barang diterima customer.
+            Ajukan pengembalian barang dengan mudah & cepat
           </p>
-
         </div>
 
-        {/* FORM */}
         <form onSubmit={handleSubmit} style={styles.form}>
+          <input name="name" placeholder="Nama Customer" onChange={handleChange} style={styles.input} />
+          <input name="orderId" placeholder="Order ID" onChange={handleChange} style={styles.input} />
+          <input type="date" name="date" onChange={handleChange} style={styles.input} />
 
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>
-              Nama Customer
-            </label>
+          <textarea
+            name="reason"
+            placeholder="Alasan pengembalian..."
+            onChange={handleChange}
+            style={styles.textarea}
+          />
 
-            <input
-              type="text"
-              name="name"
-              placeholder="Masukkan nama lengkap"
-              value={form.name}
-              onChange={handleChange}
-              style={styles.input}
-              required
-            />
-          </div>
-
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>
-              Nomor Order
-            </label>
-
-            <input
-              type="text"
-              name="orderId"
-              placeholder="Contoh : ORD-001"
-              value={form.orderId}
-              onChange={handleChange}
-              style={styles.input}
-              required
-            />
-          </div>
-
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>
-              Tanggal Barang Diterima
-            </label>
-
-            <input
-              type="date"
-              name="date"
-              value={form.date}
-              onChange={handleChange}
-              style={styles.input}
-              required
-            />
-          </div>
-
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>
-              Alasan Pengembalian
-            </label>
-
-            <textarea
-              rows="5"
-              name="reason"
-              placeholder="Jelaskan alasan pengembalian barang"
-              value={form.reason}
-              onChange={handleChange}
-              style={styles.textarea}
-              required
-            />
-          </div>
-
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>
-              Upload Bukti Foto
-            </label>
-
-            <input
-              type="file"
-              style={styles.fileInput}
-            />
-          </div>
+          <input type="file" name="file" onChange={handleChange} style={styles.file} />
 
           <button type="submit" style={styles.button}>
-            Ajukan Pengembalian
+            Kirim Pengajuan
           </button>
-
         </form>
-
       </div>
-
     </div>
   );
 };
 
 const styles = {
-
-  container: {
-    minHeight: '100vh',
-    background: '#F5F3FF',
-    padding: '60px 20px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
+  page: {
+    minHeight: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    background: "linear-gradient(135deg, #F8F5F2, #F3E8FF)",
+    padding: 20,
   },
 
   card: {
-    width: '100%',
-    maxWidth: '750px',
-    background: 'white',
-    borderRadius: '35px',
-    padding: '45px',
-    boxShadow: '0 10px 30px rgba(0,0,0,0.08)'
+    width: "100%",
+    maxWidth: 650,
+    background: "#fff",
+    borderRadius: 25,
+    padding: 40,
+    boxShadow: "0 20px 40px rgba(0,0,0,0.08)",
   },
 
   header: {
-    textAlign: 'center',
-    marginBottom: '40px'
+    textAlign: "center",
+    marginBottom: 30,
   },
 
-  iconBox: {
-    width: '90px',
-    height: '90px',
-    margin: '0 auto 20px',
-    borderRadius: '25px',
-    background: '#EDE9FE',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '42px'
+  icon: {
+    fontSize: 50,
+    marginBottom: 10,
   },
 
   title: {
-    fontSize: '38px',
-    fontWeight: '700',
-    color: '#6D28D9',
-    marginBottom: '15px'
+    fontSize: 28,
+    fontWeight: "700",
+    color: "#B76E79",
   },
 
   subtitle: {
-    color: '#666',
-    fontSize: '17px',
-    lineHeight: '1.7'
-  },
-
-  highlight: {
-    color: '#6D28D9',
-    fontWeight: '700'
+    fontSize: 14,
+    color: "#777",
   },
 
   form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '25px'
-  },
-
-  inputGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '10px'
-  },
-
-  label: {
-    fontSize: '16px',
-    fontWeight: '600',
-    color: '#333'
+    display: "flex",
+    flexDirection: "column",
+    gap: 15,
   },
 
   input: {
-    padding: '16px',
-    borderRadius: '16px',
-    border: '1px solid #D1D5DB',
-    fontSize: '15px',
-    outline: 'none'
+    padding: 14,
+    borderRadius: 12,
+    border: "1px solid #eee",
+    outline: "none",
   },
 
   textarea: {
-    padding: '16px',
-    borderRadius: '16px',
-    border: '1px solid #D1D5DB',
-    fontSize: '15px',
-    outline: 'none',
-    resize: 'none'
+    padding: 14,
+    borderRadius: 12,
+    border: "1px solid #eee",
+    minHeight: 120,
   },
 
-  fileInput: {
-    padding: '14px',
-    borderRadius: '16px',
-    border: '1px solid #D1D5DB',
-    background: '#FAFAFA'
+  file: {
+    padding: 10,
   },
 
   button: {
-    marginTop: '10px',
-    padding: '18px',
-    background: '#6D28D9',
-    color: 'white',
-    border: 'none',
-    borderRadius: '18px',
-    fontSize: '17px',
-    fontWeight: '700',
-    cursor: 'pointer',
-    transition: '0.3s'
-  }
+    marginTop: 10,
+    padding: 14,
+    border: "none",
+    borderRadius: 12,
+    background: "#B76E79",
+    color: "#fff",
+    fontWeight: "600",
+    cursor: "pointer",
+  },
 };
 
 export default ReturnProduct;

@@ -10,26 +10,39 @@ const Hero = () => {
     <HeroSection style={styles.hero}>
       <Container style={styles.container}>
         <div style={styles.card}>
-          <p style={styles.subtitle}>Koleksi Terbaru</p>
+          <p style={styles.subtitle}>
+            Furniture Premium & Membership Exclusive
+          </p>
 
           <h1 style={styles.title}>
-            Temukan Furniture <br /> Impian Rumah Anda
+            Temukan Furniture <br />
+            Impian Rumah Anda
           </h1>
 
           <p style={styles.description}>
-            Hadir dengan desain modern, minimalis, dan elegan
-            untuk mempercantik ruang tamu, kamar tidur, hingga
-            ruang kerja Anda dengan kualitas terbaik.
+            Belanja furniture berkualitas dan nikmati berbagai
+            keuntungan member seperti voucher eksklusif,
+            diskon khusus, dan promo menarik setiap bulan.
           </p>
 
-          <Button
-            variant="primary"
-            className="btn btn-primary"
-            style={styles.btn}
-            onClick={() => navigate('/products')}
-          >
-            BELI SEKARANG
-          </Button>
+          <div style={styles.buttonGroup}>
+            <Button
+              variant="primary"
+              style={styles.btn}
+              onClick={() => navigate('/products')}
+            >
+              BELI SEKARANG
+            </Button>
+
+            <button
+              style={styles.memberBtn}
+              onClick={() =>
+                navigate('/membership')
+              }
+            >
+              ⭐ DAFTAR MEMBER
+            </button>
+          </div>
         </div>
       </Container>
     </HeroSection>
@@ -40,51 +53,65 @@ const styles = {
   hero: {
     height: '80vh',
     minHeight: '600px',
-    backgroundImage: `url('/assets/images/living_room.png')`,
+    backgroundImage:
+      "url('/assets/images/living_room.png')",
     backgroundSize: 'cover',
     backgroundPosition: 'center',
-    position: 'relative',
     display: 'flex',
     alignItems: 'center',
   },
+
   container: {
     width: '100%',
     display: 'flex',
-    justifyContent: 'flex-end', /* Puts the card on the right side */
+    justifyContent: 'flex-end',
   },
+
   card: {
-    backgroundColor: 'var(--bg-card)',
+    backgroundColor: '#fff',
     padding: '60px',
-    borderRadius: '8px',
-    maxWidth: '540px',
-    boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
+    borderRadius: '20px',
+    maxWidth: '600px',
+    boxShadow: '0 10px 30px rgba(0,0,0,.1)',
   },
+
   subtitle: {
-    color: 'var(--text-dark)',
-    fontWeight: '600',
-    letterSpacing: '2px',
-    marginBottom: '16px',
-  },
-  title: {
-    color: 'var(--text-dark)',
-    fontSize: '48px',
+    color: '#8B5E3C',
     fontWeight: '700',
-    lineHeight: 1.2,
-    marginBottom: '16px',
+    letterSpacing: '2px',
+    marginBottom: '15px',
   },
+
+  title: {
+    fontSize: '50px',
+    color: '#333',
+    marginBottom: '15px',
+  },
+
   description: {
-    color: 'var(--text-light)',
-    fontSize: '16px',
-    marginBottom: '32px',
-    lineHeight: 1.5,
+    color: '#666',
+    lineHeight: '1.8',
+    marginBottom: '30px',
   },
+
+  buttonGroup: {
+    display: 'flex',
+    gap: '15px',
+    flexWrap: 'wrap',
+  },
+
   btn: {
-    padding: '16px 48px',
-    fontSize: '16px',
-    textTransform: 'uppercase',
-    letterSpacing: '1px',
-    backgroundColor: 'var(--primary)',
-  }
+    padding: '16px 35px',
+  },
+
+  memberBtn: {
+    background: '#FFD700',
+    border: 'none',
+    padding: '16px 35px',
+    borderRadius: '10px',
+    cursor: 'pointer',
+    fontWeight: '700',
+  },
 };
 
 export default Hero;

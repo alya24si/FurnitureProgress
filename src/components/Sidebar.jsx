@@ -10,6 +10,26 @@ import {
 
 import SidebarReusable from '../Reusable/Sidebar';
 import NavItem from '../Reusable/NavItem';
+import {
+  Chart as ChartJS,
+  LineElement,
+  PointElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend,
+  Filler
+} from "chart.js";
+
+ChartJS.register(
+  LineElement,
+  PointElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend,
+  Filler
+);
 
 const sidebarStyles = `
   .sidebar {
@@ -262,8 +282,18 @@ const Sidebar = ({ search = "" }) => {
             <span>Feedback</span>
           </NavLink>
 
-          {/* ANALYTICS */}
           <NavLink
+            to="/admin/custom-furniture"
+            className={({ isActive }) =>
+              `nav-item${(isActive || keyword.includes("custom")) ? " active" : ""}`
+            }
+          >
+            <FiUsers className="nav-icon" />
+            <span>Custom Furniture</span>
+          </NavLink>
+
+          {/* ANALYTICS */}
+          {/* <NavLink
             to="/admin/analytics"
             className={({ isActive }) =>
               `nav-item${(isActive || keyword.includes("analytics")) ? ' active' : ''}`
@@ -271,18 +301,7 @@ const Sidebar = ({ search = "" }) => {
           >
             <FiTrendingUp className="nav-icon" />
             <span>Analytics</span>
-          </NavLink>
-
-
-
-          {/* SALES REPORT */}
-          <NavItem
-            onClick={() => navigate('/sales-report')}
-            className="nav-item"
-          >
-            <FiTrendingUp className="nav-icon" />
-            Sales Report
-          </NavItem>
+          </NavLink> */}
 
         </nav>
 

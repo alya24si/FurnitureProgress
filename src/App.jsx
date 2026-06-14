@@ -124,6 +124,13 @@ const NotFound = React.lazy(() =>
   import('./pages/NotFound')
 );
 
+const CustomFurnitureCustomer = React.lazy(() =>
+  import('./pages/guest/CustomFurnitureCustomer')
+);
+
+const CustomFurnitureAdmin = React.lazy(() =>
+  import('./pages/admin/CustomFurnitureAdmin')
+);
 function App() {
   return (
     <ErrorBoundary>
@@ -149,6 +156,7 @@ function App() {
               <Route path="privacy-policy" element={<PrivacyPolicy />} />
               <Route path="discount-claim" element={<DiscountClaim />} />
               <Route path="membership-form" element={<MembershipForm />} />
+              <Route path="custom-furniture" element={<CustomFurnitureCustomer />} />
             </Route>
 
             {/* ===================== */}
@@ -186,7 +194,7 @@ function App() {
               <Route path="/admin/feedback" element={<Feedback />} />
               <Route path="/admin/analytics" element={<Analytics />} />
               <Route path="/admin/campaign" element={<Campaign />} />
-
+              <Route path="/admin/custom-furniture" element={<CustomFurnitureAdmin />} />
             </Route>
 
             {/* ===================== */}

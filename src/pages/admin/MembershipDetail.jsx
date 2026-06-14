@@ -1,36 +1,78 @@
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { supabase } from "../../services/supabase";
 
 function MembershipDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const members = [
-    {
-      id: "MBR001",
-      name: "Alya Deka",
-      email: "alya@gmail.com",
-      phone: "08123456789",
-      address: "Pekanbaru",
-      level: "Gold",
-      status: "Aktif",
-      joinDate: "10 Juni 2026",
-    },
+  const [member, setMember] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-    {
-      id: "MBR002",
-      name: "Rehan",
-      email: "rehan@gmail.com",
-      phone: "08234567890",
-      address: "Jakarta",
-      level: "Silver",
-      status: "Menunggu",
-      joinDate: "12 Juni 2026",
-    },
-  ];
+  useEffect(() => {
+    getMember();
+  }, []);
 
-  const member = members.find(
-    (item) => item.id === id
-  );
+  const getMember = async () => {
+    const { data, error } = await supabase
+      .from("memberships")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (!error) {
+      setMember(data);
+    }
+
+    setLoading(false);
+  };
+
+  const approveMember = async () => {
+    await supabase
+      .from("memberships")
+      .update({
+        status: "Aktif",
+      })
+      .eq("id", id);
+
+    alert("Membership berhasil disetujui");
+
+    getMember();
+  };
+
+  const rejectMember = async () => {
+    await supabase
+      .from("memberships")
+      .update({
+        status: "Ditolak",
+      })
+      .eq("id", id);
+
+    alert("Membership ditolak");
+
+    getMember();
+  };
+
+  const sendDiscount = () => {
+    const discount =
+      member.membership_type === "Gold"
+        ? "20%"
+        : member.membership_type === "Silver"
+        ? "15%"
+        : "10%";
+
+    alert(
+      `Voucher diskon ${discount} berhasil diberikan ke ${member.full_name}`
+    );
+  };
+
+  if (loading) {
+    return (
+      <div style={{ padding: "30px" }}>
+        Loading...
+      </div>
+    );
+  }
 
   if (!member) {
     return (
@@ -67,8 +109,13 @@ function MembershipDetail() {
 
         <div style={styles.infoGrid}>
           <div style={styles.infoCard}>
+            <strong>Kode Member</strong>
+            <p>{member.member_code}</p>
+          </div>
+
+          <div style={styles.infoCard}>
             <strong>Nama</strong>
-            <p>{member.name}</p>
+            <p>{member.full_name}</p>
           </div>
 
           <div style={styles.infoCard}>
@@ -87,8 +134,13 @@ function MembershipDetail() {
           </div>
 
           <div style={styles.infoCard}>
+            <strong>Jenis Kelamin</strong>
+            <p>{member.gender}</p>
+          </div>
+
+          <div style={styles.infoCard}>
             <strong>Level Membership</strong>
-            <p>{member.level}</p>
+            <p>{member.membership_type}</p>
           </div>
 
           <div style={styles.infoCard}>
@@ -107,20 +159,34 @@ function MembershipDetail() {
 
           <div style={styles.infoCard}>
             <strong>Tanggal Bergabung</strong>
-            <p>{member.joinDate}</p>
+
+            <p>
+              {new Date(
+                member.join_date
+              ).toLocaleDateString("id-ID")}
+            </p>
           </div>
         </div>
 
         <div style={styles.buttonGroup}>
-          <button style={styles.approve}>
+          <button
+            style={styles.approve}
+            onClick={approveMember}
+          >
             Setujui Membership
           </button>
 
-          <button style={styles.reject}>
+          <button
+            style={styles.reject}
+            onClick={rejectMember}
+          >
             Tolak Membership
           </button>
 
-          <button style={styles.discount}>
+          <button
+            style={styles.discount}
+            onClick={sendDiscount}
+          >
             Berikan Diskon
           </button>
         </div>
@@ -140,7 +206,8 @@ const styles = {
     background: "#fff",
     padding: "35px",
     borderRadius: "24px",
-    boxShadow: "0 10px 25px rgba(0,0,0,.08)",
+    boxShadow:
+      "0 10px 25px rgba(0,0,0,.08)",
   },
 
   title: {
