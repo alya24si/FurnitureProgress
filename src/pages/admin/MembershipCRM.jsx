@@ -23,6 +23,7 @@ function MembershipCRM() {
     address: "",
     gender: "Laki-laki",
     membership_type: "Gold",
+    total_spending: 0, // <-- Properti terkontrol untuk state form
   });
 
   // ===================== GET =====================
@@ -73,6 +74,7 @@ function MembershipCRM() {
       address: "",
       gender: "Laki-laki",
       membership_type: "Gold",
+      total_spending: 0,
     });
   };
 
@@ -131,6 +133,7 @@ function MembershipCRM() {
       address: member.address,
       gender: member.gender,
       membership_type: member.membership_type,
+      total_spending: member.total_spending || 0, // <-- Memuat nilai spending lama ke form
     });
   };
 
@@ -139,7 +142,7 @@ function MembershipCRM() {
     const { error } = await supabase
       .from("memberships")
       .update({
-        ...newMember,
+        ...newMember, // <-- Secara otomatis ikut mengirim total_spending yang telah diubah di form
       })
       .eq("id", editId);
 
@@ -183,11 +186,22 @@ function MembershipCRM() {
       <div style={styles.header}>
         <h1 style={styles.title}>Kelola Membership</h1>
 
+        <input
+          placeholder="Cari nama atau email..."
+          style={{ ...styles.input, width: "250px" }}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+
         <button
           style={styles.addBtn}
-          onClick={() => setShowForm(!showForm)}
+          onClick={() => {
+            if (showForm) resetForm();
+            setShowForm(!showForm);
+            setEditId(null);
+          }}
         >
-          + Tambah Member
+          {showForm && editId ? "Batal Edit" : "+ Tambah Member"}
         </button>
       </div>
 
@@ -241,7 +255,20 @@ function MembershipCRM() {
             }
           />
 
-          {/* GENDER DROPDOWN (FIX YANG KAMU MINTA) */}
+          {/* INPUT BARU: TOTAL BELANJA */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+            <label style={{ fontSize: "12px", color: "#5D4037", fontWeight: "600" }}>Total Belanja (Rp)</label>
+            <input
+              type="number"
+              placeholder="Total Belanja"
+              style={styles.input}
+              value={newMember.total_spending}
+              onChange={(e) =>
+                setNewMember({ ...newMember, total_spending: Number(e.target.value) || 0 })
+              }
+            />
+          </div>
+
           <select
             style={styles.input}
             value={newMember.gender}
@@ -272,12 +299,12 @@ function MembershipCRM() {
             style={styles.saveBtn}
             onClick={editId ? updateMember : addMember}
           >
-            {editId ? "Update" : "Simpan"}
+            {editId ? "Update Data" : "Simpan"}
           </button>
         </div>
       )}
 
-      {/* ===================== VOUCHER (INI TETAP ADA) ===================== */}
+      {/* ===================== VOUCHER ===================== */}
       <div style={styles.voucherCard}>
         <h3>Kirim Voucher</h3>
 
@@ -315,6 +342,7 @@ function MembershipCRM() {
               <th style={styles.th}>Email</th>
               <th style={styles.th}>Gender</th>
               <th style={styles.th}>Level</th>
+              <th style={styles.th}>Total Belanja</th>
               <th style={styles.th}>Aksi</th>
             </tr>
           </thead>
@@ -327,6 +355,10 @@ function MembershipCRM() {
                 <td style={styles.td}>{m.email}</td>
                 <td style={styles.td}>{m.gender}</td>
                 <td style={styles.td}>{m.membership_type}</td>
+                
+                <td style={{ ...styles.td, fontWeight: "600", color: "#16A34A" }}>
+                  Rp {(m.total_spending || 0).toLocaleString("id-ID")}
+                </td>
 
                 <td style={styles.td}>
                   <button
@@ -364,14 +396,16 @@ function MembershipCRM() {
 // ===================== STYLES =====================
 const styles = {
   container: { padding: 30, background: "#F8F5F0" },
-  header: { display: "flex", justifyContent: "space-between" },
-  title: { color: "#5D4037" },
+  header: { display: "flex", justifyContent: "space-between", alignItems: "center" },
+  title: { color: "#5D4037", margin: 0 },
 
   addBtn: {
     background: "#16A34A",
     color: "#fff",
     padding: 12,
     borderRadius: 10,
+    border: "none",
+    cursor: "pointer",
   },
 
   formCard: {
@@ -380,12 +414,16 @@ const styles = {
     marginTop: 20,
     display: "grid",
     gap: 10,
+    borderRadius: 10,
+    boxShadow: "0 2px 5px rgba(0,0,0,0.05)",
   },
 
   voucherCard: {
     background: "#fff",
     padding: 20,
     marginTop: 20,
+    borderRadius: 10,
+    boxShadow: "0 2px 5px rgba(0,0,0,0.05)",
   },
 
   voucherRow: {
@@ -404,6 +442,8 @@ const styles = {
     color: "#fff",
     padding: 12,
     borderRadius: 10,
+    border: "none",
+    cursor: "pointer",
   },
 
   voucherBtn: {
@@ -411,13 +451,15 @@ const styles = {
     color: "#fff",
     padding: 12,
     borderRadius: 10,
+    border: "none",
+    cursor: "pointer",
   },
 
-  tableCard: { background: "#fff", marginTop: 20 },
+  tableCard: { background: "#fff", marginTop: 20, borderRadius: 10, overflow: "hidden", boxShadow: "0 2px 5px rgba(0,0,0,0.05)" },
 
   table: { width: "100%", borderCollapse: "collapse" },
 
-  th: { background: "#5D4037", color: "#fff", padding: 15 },
+  th: { background: "#5D4037", color: "#fff", padding: 15, textAlign: "left" },
 
   td: { padding: 15, borderBottom: "1px solid #eee" },
 
@@ -428,6 +470,7 @@ const styles = {
     borderRadius: 8,
     border: "none",
     marginRight: 6,
+    cursor: "pointer",
   },
 
   editBtn: {
@@ -437,6 +480,7 @@ const styles = {
     borderRadius: 8,
     border: "none",
     marginRight: 6,
+    cursor: "pointer",
   },
 
   deleteBtn: {
@@ -445,6 +489,7 @@ const styles = {
     padding: 8,
     borderRadius: 8,
     border: "none",
+    cursor: "pointer",
   },
 };
 

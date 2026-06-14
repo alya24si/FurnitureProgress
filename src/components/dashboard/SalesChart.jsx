@@ -20,16 +20,40 @@ ChartJS.register(
   Legend
 );
 
-function SalesChart({ purchases, totalMembers, totalCustomers }) {
+function SalesChart({ purchases, members = [], totalMembers, totalCustomers }) {
   const groupedData = {};
 
+  // Mendapatkan tanggal hari ini sebagai cadangan (14/6/2026 atau sesuai hari aktif sistem)
+  const todayDate = new Date().toLocaleDateString("id-ID");
+
+  // 1. Ambil data dari riwayat transaksi regular customer_purchases
   purchases.forEach((item) => {
-    const date = new Date(item.purchase_date).toLocaleDateString("id-ID");
-    groupedData[date] = (groupedData[date] || 0) + Number(item.total);
+    const date = item.purchase_date 
+      ? new Date(item.purchase_date).toLocaleDateString("id-ID") 
+      : todayDate;
+    groupedData[date] = (groupedData[date] || 0) + Number(item.total || 0);
   });
 
-  const labels = Object.keys(groupedData);
-  const values = Object.values(groupedData);
+  // 2. Ambil data total_spending milik membership ke bagan tanggal
+  members.forEach((member) => {
+    if (member.total_spending && Number(member.total_spending) > 0) {
+      // Menggunakan created_at jika ada, jika tidak ada/berbeda langsung lempar ke tanggal hari ini agar gabung di chart
+      const date = member.created_at 
+        ? new Date(member.created_at).toLocaleDateString("id-ID") 
+        : todayDate;
+      
+      groupedData[date] = (groupedData[date] || 0) + Number(member.total_spending);
+    }
+  });
+
+  // Mengurutkan tanggal agar grafik runtut waktu kronologis
+  const labels = Object.keys(groupedData).sort((a, b) => {
+    const splitA = a.split("/").reverse().join("-");
+    const splitB = b.split("/").reverse().join("-");
+    return new Date(splitA) - new Date(splitB);
+  });
+  
+  const values = labels.map(date => groupedData[date]);
 
   const totalSum = values.reduce((a, b) => a + b, 0);
   const avgSales = values.length > 0 ? totalSum / values.length : 0;
@@ -87,7 +111,7 @@ function SalesChart({ purchases, totalMembers, totalCustomers }) {
     datasets: [
       {
         data: [totalMembers, totalCustomers],
-        backgroundColor: ["#B784A7", "#3A2436"], // Kombinasi palet warna tema rose gold & deep plum
+        backgroundColor: ["#B784A7", "#3A2436"],
         borderWidth: 3,
         borderColor: "#ffffff",
         hoverOffset: 6,
@@ -119,7 +143,7 @@ function SalesChart({ purchases, totalMembers, totalCustomers }) {
         }
       }
     },
-    cutout: "70%", // Efek lingkaran cincin modern
+    cutout: "70%",
   };
 
   return (
@@ -148,7 +172,7 @@ function SalesChart({ purchases, totalMembers, totalCustomers }) {
 
       {/* TWO COLUMNS VIEW */}
       <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "40px", minHeight: "300px" }}>
-        {/* Kiri: Grafik Batang Arus Kas */}
+        {/* Kiri: Grafik Batang Arus Cash */}
         <div style={{ position: "relative" }}>
           <p style={{ margin: "0 0 15px 0", fontSize: "13px", fontWeight: "700", color: "#8A7485", textTransform: "uppercase", letterSpacing: "0.5px" }}>📈 Tren Pendapatan Harian</p>
           <div style={{ height: "270px", position: "relative" }}>

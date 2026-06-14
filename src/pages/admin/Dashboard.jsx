@@ -59,7 +59,12 @@ function Dashboard() {
     };
   }, []);
 
-  const totalRevenue = purchases.reduce((sum, item) => sum + Number(item.total || 0), 0);
+  // ===================== LOGIKA REVENUE UPDATE =====================
+  // Menghitung omzet gabungan: total dari customer_purchases + total_spending dari memberships
+  const purchaseRevenue = purchases.reduce((sum, item) => sum + Number(item.total || 0), 0);
+  const membershipRevenue = members.reduce((sum, item) => sum + Number(item.total_spending || 0), 0);
+  const totalRevenue = purchaseRevenue + membershipRevenue;
+
   const totalOrders = purchases.length;
   const totalCustomers = new Set(purchases.map((item) => item.customer_id)).size;
   const totalMembers = members.length;
@@ -163,9 +168,10 @@ function Dashboard() {
         </h2>
 
         <div style={{ width: "100%" }}>
-          {/* MENGALIRKAN PROPS JUMLAH USER KE DALAM CHART */}
+          {/* MENGALIRKAN ARRAY MEMBERS KE DALAM CHART SUPAYA BISA DIHITUNG GRAFIKNYA */}
           <SalesChart 
             purchases={purchases} 
+            members={members} // <-- Mengirim data members murni ke komponen anak
             totalMembers={totalMembers} 
             totalCustomers={totalCustomers} 
           />
