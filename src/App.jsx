@@ -5,6 +5,7 @@ import './App.css';
 import MainLayout from './layouts/MainLayout';
 import AuthLayout from './layouts/AuthLayout';
 import AdminLayout from './layouts/AdminLayout';
+import MemberLayout from './layouts/MemberLayout';
 
 import Loading from './components/Loading';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -131,6 +132,32 @@ const CustomFurnitureCustomer = React.lazy(() =>
 const CustomFurnitureAdmin = React.lazy(() =>
   import('./pages/admin/CustomFurnitureAdmin')
 );
+const MemberDashboard = React.lazy(() =>
+  import("./pages/member/MemberDashboard")
+);
+
+const MemberOrders = React.lazy(() =>
+  import("./pages/member/MemberOrders")
+);
+
+const MemberRewards = React.lazy(() =>
+  import("./pages/member/MemberRewards")
+);
+
+const MemberVoucher = React.lazy(() =>
+  import("./pages/member/MemberVoucher")
+);
+
+const MemberHistory = React.lazy(() =>
+  import("./pages/member/MemberHistory")
+);
+
+const MemberProfile = React.lazy(() =>
+  import("./pages/member/MemberProfile")
+);
+
+
+
 function App() {
   return (
     <ErrorBoundary>
@@ -157,6 +184,7 @@ function App() {
               <Route path="discount-claim" element={<DiscountClaim />} />
               <Route path="membership-form" element={<MembershipForm />} />
               <Route path="custom-furniture" element={<CustomFurnitureCustomer />} />
+
             </Route>
 
             {/* ===================== */}
@@ -174,6 +202,48 @@ function App() {
               <Route path="/register-admin" element={<RegisterAdmin />} />
 
             </Route>
+
+
+
+            {/* ===================== */}
+            {/* MEMBER */}
+            {/* ===================== */}
+            <Route element={<MemberLayout />}>
+
+              <Route
+                path="/member/dashboard"
+                element={<MemberDashboard />}
+              />
+
+              <Route
+                path="/member/orders"
+                element={<MemberOrders />}
+              />
+
+              <Route
+                path="/member/rewards"
+                element={<MemberRewards />}
+              />
+
+              <Route
+                path="/member/vouchers"
+                element={<MemberVoucher />}
+              />
+
+              <Route
+                path="/member/history"
+                element={<MemberHistory />}
+              />
+
+              <Route
+                path="/member/profile"
+                element={<MemberProfile />}
+              />
+
+            </Route>
+
+
+
 
             {/* ===================== */}
             {/* ADMIN */}

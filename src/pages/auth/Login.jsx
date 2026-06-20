@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { FiUser, FiShield } from "react-icons/fi";
+import { FiUser, FiShield, FiUsers } from "react-icons/fi";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -15,6 +15,25 @@ const Login = () => {
       </p>
 
       <div style={styles.cards}>
+
+        <div style={styles.card}>
+          <div style={styles.iconBox}>
+            <FiUsers size={40} />
+          </div>
+
+          <h2>Guest</h2>
+
+          <p>
+            Masuk sebagai pengunjung untuk melihat katalog furniture
+          </p>
+
+          <button
+            style={styles.button}
+            onClick={() => navigate("/")}
+          >
+            Masuk Guest
+          </button>
+        </div>
 
         <div style={styles.card}>
           <div style={styles.iconBox}>
@@ -40,17 +59,17 @@ const Login = () => {
             <FiUser size={40} />
           </div>
 
-          <h2>Customer</h2>
+          <h2>Member</h2>
 
           <p>
-            Jelajahi produk furniture premium
+            Jelajahi produk furniture premium dan benefit membership
           </p>
 
           <button
             style={styles.button}
-            onClick={() => navigate("/login-customer")}
+            onClick={() => navigate("/member/dashboard")}
           >
-            Login Customer
+            Masuk Member
           </button>
         </div>
 
