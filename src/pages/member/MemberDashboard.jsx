@@ -1,10 +1,84 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../../services/supabase";
 
 function MemberDashboard() {
+  const navigate = useNavigate();
   const [member, setMember] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
+
+  // ✅ STATE BARU UNTUK MODAL TAMBAHAN
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
+  const [showAllFeaturesModal, setShowAllFeaturesModal] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [upgradeData, setUpgradeData] = useState({
+    targetTier: "Platinum",
+    ktp: "",
+    phone: "",
+    reason: "",
+    agree: false,
+  });
+
+  // ✅ DATA NOTIFIKASI
+  const notifications = [
+    {
+      id: 1,
+      icon: "🎫",
+      title: "Voucher Baru Tersedia!",
+      desc: "Voucher diskon 20% siap diklaim. Berlaku hingga 30 Juni 2026.",
+      time: "5 menit lalu",
+      unread: true,
+    },
+    {
+      id: 2,
+      icon: "📦",
+      title: "Pesanan INV002 Sedang Diproses",
+      desc: "Pesanan Meja Kerja Anda sedang dalam tahap pengemasan.",
+      time: "1 jam lalu",
+      unread: true,
+    },
+    {
+      id: 3,
+      icon: "⭐",
+      title: "Reward Point Bertambah",
+      desc: "Anda mendapatkan 500 poin dari transaksi terakhir.",
+      time: "2 jam lalu",
+      unread: true,
+    },
+    {
+      id: 4,
+      icon: "🎉",
+      title: "Promo Spesial Member",
+      desc: "Dapatkan cashback 10% untuk pembelian furniture di atas Rp 5 juta.",
+      time: "1 hari lalu",
+      unread: false,
+    },
+    {
+      id: 5,
+      icon: "✅",
+      title: "Pesanan INV001 Selesai",
+      desc: "Sofa Premium telah sampai. Jangan lupa beri ulasan!",
+      time: "2 hari lalu",
+      unread: false,
+    },
+  ];
+
+  // ✅ DATA SEMUA FITUR
+  const allFeatures = [
+    { icon: "🎫", title: "Voucher Saya", desc: "Kelola voucher aktif", route: "/member/rewards" },
+    { icon: "⭐", title: "Reward Point", desc: "Tukar poin dengan hadiah", route: "/member/rewards" },
+    { icon: "📦", title: "Riwayat Pesanan", desc: "Lihat semua transaksi", route: "/member/orders" },
+    { icon: "👤", title: "Edit Profil", desc: "Update data diri", route: "/member/profile" },
+    { icon: "📊", title: "Riwayat Aktivitas", desc: "Log aktivitas akun", route: "/member/history" },
+    { icon: "💳", title: "Metode Pembayaran", desc: "Kelola metode bayar", route: "/member/profile" },
+    { icon: "🏠", title: "Alamat Saya", desc: "Kelola alamat pengiriman", route: "/member/profile" },
+    { icon: "🔔", title: "Notifikasi", desc: "Pengaturan notifikasi", route: "/member/profile" },
+    { icon: "🎁", title: "Referral Program", desc: "Ajak teman & dapat bonus", route: "/member/rewards" },
+    { icon: "💬", title: "Pusat Bantuan", desc: "FAQ & kontak CS", route: "/member/profile" },
+    { icon: "🔒", title: "Keamanan Akun", desc: "Password & 2FA", route: "/member/profile" },
+    { icon: "📝", title: "Ulasan Saya", desc: "Riwayat ulasan produk", route: "/member/orders" },
+  ];
 
   useEffect(() => {
     getMember();
@@ -25,9 +99,9 @@ function MemberDashboard() {
     setMember(data);
   };
 
-  // Handlers
+  // Handlers (DIMODIFIKASI)
   const handleNotification = () => {
-    alert("Anda memiliki 3 notifikasi baru:\n\n• Voucher diskon 20% siap diklaim\n• Pesanan INV002 sedang diproses\n• Reward point bertambah 500");
+    setShowNotificationModal(true);
   };
 
   const handleChat = () => {
@@ -35,27 +109,34 @@ function MemberDashboard() {
   };
 
   const handleViewVoucher = () => {
-    alert("Membuka halaman Voucher\n\nAnda memiliki 3 voucher aktif:\n• VCR-20-JUN: Diskon 20%\n• VCR-FREE-SHIP: Gratis ongkir\n• VCR-CASHBACK: Cashback 500rb");
+    navigate("/member/rewards");
   };
 
   const handleRewardPoint = () => {
-    alert(`Membuka halaman Reward Point\n\nPoin Anda: ${rewardPoints}\nSetara dengan: Rp ${(rewardPoints * 100).toLocaleString()}\n\nTukar poin Anda dengan voucher menarik!`);
+    navigate("/member/rewards");
   };
 
   const handleOrderHistory = () => {
-    alert("Membuka halaman Riwayat Pesanan...");
+    navigate("/member/history");
   };
 
   const handleEditProfile = () => {
-    alert("Membuka halaman Edit Profil...");
+    navigate("/member/profile");
   };
 
   const handleSeeAllFeatures = () => {
-    alert("Membuka halaman Semua Fitur...");
+    setShowAllFeaturesModal(true);
   };
 
   const handleUpgrade = () => {
-    alert("Membuka halaman Upgrade Membership\n\nUpgrade ke Platinum untuk mendapatkan:\n• Diskon hingga 30%\n• Prioritas customer service\n• Free shipping tanpa minimum\n• Early access promo");
+    setUpgradeData({
+      targetTier: "Platinum",
+      ktp: "",
+      phone: member?.phone || "",
+      reason: "",
+      agree: false,
+    });
+    setShowUpgradeModal(true);
   };
 
   const handleFilter = () => {
@@ -67,7 +148,7 @@ function MemberDashboard() {
   };
 
   const handleViewAllTransactions = () => {
-    alert("Membuka halaman Semua Transaksi...");
+    navigate("/member/orders");
   };
 
   const handleViewDetail = (transaction) => {
@@ -82,6 +163,48 @@ function MemberDashboard() {
 
   const handlePageChange = (page) => {
     alert(`Membuka halaman ${page}...`);
+  };
+
+  // ✅ HANDLER BARU: SUBMIT UPGRADE
+  const handleSubmitUpgrade = () => {
+    if (!upgradeData.ktp.trim()) {
+      alert("Mohon isi nomor KTP!");
+      return;
+    }
+    if (!upgradeData.phone.trim()) {
+      alert("Mohon isi nomor telepon!");
+      return;
+    }
+    if (!upgradeData.reason.trim()) {
+      alert("Mohon isi alasan upgrade!");
+      return;
+    }
+    if (!upgradeData.agree) {
+      alert("Mohon centang persetujuan syarat & ketentuan!");
+      return;
+    }
+
+    alert(
+      `Permintaan Upgrade Berhasil Diajukan!\n\n` +
+        `Tier Tujuan: ${upgradeData.targetTier}\n` +
+        `No. KTP: ${upgradeData.ktp}\n` +
+        `No. HP: ${upgradeData.phone}\n\n` +
+        `Tim admin akan memverifikasi data Anda dalam 1x24 jam.\n` +
+        `Anda akan menerima notifikasi melalui email.`
+    );
+
+    setShowUpgradeModal(false);
+  };
+
+  // ✅ HANDLER BARU: KLIK NOTIFIKASI
+  const handleNotificationClick = (notif) => {
+    alert(`Membuka detail: ${notif.title}\n\n${notif.desc}`);
+  };
+
+  // ✅ HANDLER BARU: KLIK FITUR
+  const handleFeatureClick = (route) => {
+    setShowAllFeaturesModal(false);
+    navigate(route);
   };
 
   if (!member) {
@@ -112,9 +235,14 @@ function MemberDashboard() {
         </div>
 
         <div style={styles.topbarRight}>
-          <button style={styles.iconBtn} onClick={handleNotification}>🔔</button>
+          <button style={styles.iconBtn} onClick={handleNotification}>
+            🔔
+            <span style={styles.notifBadge}>
+              {notifications.filter((n) => n.unread).length}
+            </span>
+          </button>
           <button style={styles.iconBtn} onClick={handleChat}>💬</button>
-          <div style={styles.userChip}>
+          <div style={styles.userChip} onClick={handleEditProfile}>
             <div style={styles.userAvatar}>
               {member.full_name?.charAt(0).toUpperCase()}
             </div>
@@ -478,7 +606,7 @@ function MemberDashboard() {
         </div>
       </div>
 
-      {/* MODAL */}
+      {/* MODAL DETAIL TRANSAKSI */}
       {showModal && selectedTransaction && (
         <div style={styles.modalOverlay} onClick={handleCloseModal}>
           <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
@@ -516,6 +644,196 @@ function MemberDashboard() {
               </button>
               <button style={styles.modalBtnPrimary} onClick={() => alert("Mencetak invoice...")}>
                 🖨️ Cetak Invoice
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ MODAL NOTIFIKASI */}
+      {showNotificationModal && (
+        <div style={styles.modalOverlay} onClick={() => setShowNotificationModal(false)}>
+          <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <div style={styles.modalHeader}>
+              <div>
+                <h2 style={styles.modalTitle}>🔔 Notifikasi</h2>
+                <p style={styles.modalSubtitle}>
+                  {notifications.filter((n) => n.unread).length} notifikasi belum dibaca
+                </p>
+              </div>
+              <button style={styles.modalClose} onClick={() => setShowNotificationModal(false)}>✕</button>
+            </div>
+            
+            <div style={styles.modalBody}>
+              <div style={styles.notifList}>
+                {notifications.map((notif) => (
+                  <div
+                    key={notif.id}
+                    style={{
+                      ...styles.notifItem,
+                      background: notif.unread ? "#FDF2F4" : "#fff",
+                    }}
+                    onClick={() => handleNotificationClick(notif)}
+                  >
+                    <div style={styles.notifIcon}>{notif.icon}</div>
+                    <div style={styles.notifContent}>
+                      <div style={styles.notifHeader}>
+                        <strong style={styles.notifTitle}>{notif.title}</strong>
+                        {notif.unread && <span style={styles.notifUnread}></span>}
+                      </div>
+                      <p style={styles.notifDesc}>{notif.desc}</p>
+                      <p style={styles.notifTime}>{notif.time}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div style={styles.modalFooter}>
+              <button style={styles.modalBtnSecondary} onClick={() => setShowNotificationModal(false)}>
+                Tutup
+              </button>
+              <button style={styles.modalBtnPrimary} onClick={() => alert("Menandai semua sebagai dibaca...")}>
+                ✓ Tandai Semua Dibaca
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ MODAL SEMUA FITUR */}
+      {showAllFeaturesModal && (
+        <div style={styles.modalOverlay} onClick={() => setShowAllFeaturesModal(false)}>
+          <div style={{ ...styles.modalContent, maxWidth: "600px" }} onClick={(e) => e.stopPropagation()}>
+            <div style={styles.modalHeader}>
+              <div>
+                <h2 style={styles.modalTitle}>Semua Fitur</h2>
+                <p style={styles.modalSubtitle}>Akses cepat ke semua layanan member</p>
+              </div>
+              <button style={styles.modalClose} onClick={() => setShowAllFeaturesModal(false)}>✕</button>
+            </div>
+            
+            <div style={styles.modalBody}>
+              <div style={styles.featuresGrid}>
+                {allFeatures.map((feature, idx) => (
+                  <button
+                    key={idx}
+                    style={styles.featureItem}
+                    onClick={() => handleFeatureClick(feature.route)}
+                  >
+                    <div style={styles.featureIcon}>{feature.icon}</div>
+                    <div style={styles.featureText}>
+                      <strong style={styles.featureTitle}>{feature.title}</strong>
+                      <span style={styles.featureDesc}>{feature.desc}</span>
+                    </div>
+                    <span style={styles.featureArrow}>→</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div style={styles.modalFooter}>
+              <button style={styles.modalBtnSecondary} onClick={() => setShowAllFeaturesModal(false)}>
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ MODAL UPGRADE MEMBERSHIP */}
+      {showUpgradeModal && (
+        <div style={styles.modalOverlay} onClick={() => setShowUpgradeModal(false)}>
+          <div style={{ ...styles.modalContent, maxWidth: "550px" }} onClick={(e) => e.stopPropagation()}>
+            <div style={styles.modalHeader}>
+              <div>
+                <h2 style={styles.modalTitle}>👑 Upgrade Membership</h2>
+                <p style={styles.modalSubtitle}>Upgrade ke tier Platinum</p>
+              </div>
+              <button style={styles.modalClose} onClick={() => setShowUpgradeModal(false)}>✕</button>
+            </div>
+            
+            <div style={styles.modalBody}>
+              {/* Info Platinum */}
+              <div style={styles.upgradeInfoBox}>
+                <h4 style={styles.upgradeInfoTitle}>Keuntungan Platinum:</h4>
+                <ul style={styles.upgradeInfoList}>
+                  <li>Diskon hingga 30% untuk semua produk</li>
+                  <li>Prioritas customer service 24/7</li>
+                  <li>Free shipping tanpa minimum belanja</li>
+                  <li>Early access promo eksklusif</li>
+                  <li>Gift ulang tahun spesial</li>
+                </ul>
+              </div>
+
+              {/* Form Data */}
+              <div style={styles.upgradeForm}>
+                <div style={styles.formGroup}>
+                  <label style={styles.formLabel}>Tier Tujuan</label>
+                  <select
+                    style={styles.formInput}
+                    value={upgradeData.targetTier}
+                    onChange={(e) => setUpgradeData({ ...upgradeData, targetTier: e.target.value })}
+                  >
+                    <option value="Platinum">Platinum</option>
+                    <option value="Gold">Gold</option>
+                  </select>
+                </div>
+
+                <div style={styles.formGroup}>
+                  <label style={styles.formLabel}>Nomor KTP</label>
+                  <input
+                    type="text"
+                    style={styles.formInput}
+                    placeholder="Masukkan nomor KTP"
+                    value={upgradeData.ktp}
+                    onChange={(e) => setUpgradeData({ ...upgradeData, ktp: e.target.value })}
+                  />
+                </div>
+
+                <div style={styles.formGroup}>
+                  <label style={styles.formLabel}>Nomor Telepon</label>
+                  <input
+                    type="tel"
+                    style={styles.formInput}
+                    placeholder="08xxxxxxxxxx"
+                    value={upgradeData.phone}
+                    onChange={(e) => setUpgradeData({ ...upgradeData, phone: e.target.value })}
+                  />
+                </div>
+
+                <div style={styles.formGroup}>
+                  <label style={styles.formLabel}>Alasan Upgrade</label>
+                  <textarea
+                    style={styles.formTextarea}
+                    placeholder="Jelaskan alasan Anda ingin upgrade membership..."
+                    value={upgradeData.reason}
+                    onChange={(e) => setUpgradeData({ ...upgradeData, reason: e.target.value })}
+                    rows="3"
+                  />
+                </div>
+
+                <div style={styles.formCheck}>
+                  <input
+                    type="checkbox"
+                    id="agree"
+                    checked={upgradeData.agree}
+                    onChange={(e) => setUpgradeData({ ...upgradeData, agree: e.target.checked })}
+                    style={styles.formCheckbox}
+                  />
+                  <label htmlFor="agree" style={styles.formCheckLabel}>
+                    Saya menyetujui syarat & ketentuan upgrade membership
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div style={styles.modalFooter}>
+              <button style={styles.modalBtnSecondary} onClick={() => setShowUpgradeModal(false)}>
+                Batal
+              </button>
+              <button style={styles.modalBtnPrimary} onClick={handleSubmitUpgrade}>
+                Ajukan Upgrade
               </button>
             </div>
           </div>
@@ -605,6 +923,25 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    position: "relative",
+  },
+
+  // ✅ STYLE BARU: BADGE NOTIFIKASI
+  notifBadge: {
+    position: "absolute",
+    top: "-4px",
+    right: "-4px",
+    background: "#EF4444",
+    color: "#fff",
+    fontSize: "10px",
+    fontWeight: "700",
+    width: "18px",
+    height: "18px",
+    borderRadius: "50%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    border: "2px solid #fff",
   },
 
   userChip: {
@@ -1157,21 +1494,29 @@ const styles = {
     maxWidth: "500px",
     boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
     animation: "slideUp 0.3s",
+    maxHeight: "90vh",
+    overflowY: "auto",
   },
 
   modalHeader: {
     display: "flex",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-start",
     padding: "20px 24px",
     borderBottom: "1px solid #E5E7EB",
   },
 
   modalTitle: {
-    margin: 0,
+    margin: "0 0 4px",
     fontSize: "18px",
     fontWeight: "700",
     color: "#111827",
+  },
+
+  modalSubtitle: {
+    margin: 0,
+    fontSize: "13px",
+    color: "#6B7280",
   },
 
   modalClose: {
@@ -1237,6 +1582,204 @@ const styles = {
     fontSize: "14px",
     fontWeight: "600",
     color: "#fff",
+    cursor: "pointer",
+  },
+
+  // ✅ STYLE BARU: NOTIFIKASI
+  notifList: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
+  },
+
+  notifItem: {
+    display: "flex",
+    gap: "12px",
+    padding: "14px",
+    borderRadius: "10px",
+    border: "1px solid #E5E7EB",
+    cursor: "pointer",
+    transition: "all 0.2s",
+  },
+
+  notifIcon: {
+    width: "40px",
+    height: "40px",
+    background: "#FDF2F4",
+    borderRadius: "10px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "18px",
+    flexShrink: 0,
+  },
+
+  notifContent: {
+    flex: 1,
+  },
+
+  notifHeader: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    marginBottom: "4px",
+  },
+
+  notifTitle: {
+    fontSize: "14px",
+    color: "#111827",
+  },
+
+  notifUnread: {
+    width: "6px",
+    height: "6px",
+    background: "#EF4444",
+    borderRadius: "50%",
+  },
+
+  notifDesc: {
+    margin: "0 0 6px",
+    fontSize: "13px",
+    color: "#6B7280",
+    lineHeight: 1.5,
+  },
+
+  notifTime: {
+    margin: 0,
+    fontSize: "11px",
+    color: "#9CA3AF",
+  },
+
+  // ✅ STYLE BARU: SEMUA FITUR
+  featuresGrid: {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+    gap: "10px",
+  },
+
+  featureItem: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    padding: "12px",
+    background: "#fff",
+    border: "1px solid #E5E7EB",
+    borderRadius: "10px",
+    cursor: "pointer",
+    textAlign: "left",
+    transition: "all 0.15s",
+  },
+
+  featureIcon: {
+    width: "36px",
+    height: "36px",
+    background: "#FDF2F4",
+    borderRadius: "8px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "16px",
+    flexShrink: 0,
+  },
+
+  featureText: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    gap: "2px",
+  },
+
+  featureTitle: {
+    fontSize: "13px",
+    color: "#111827",
+  },
+
+  featureDesc: {
+    fontSize: "11px",
+    color: "#6B7280",
+  },
+
+  featureArrow: {
+    color: "#9CA3AF",
+    fontSize: "14px",
+  },
+
+  // ✅ STYLE BARU: UPGRADE FORM
+  upgradeInfoBox: {
+    background: "linear-gradient(135deg, #FDF2F4 0%, #FEE2E2 100%)",
+    border: "1px solid #FECACA",
+    borderRadius: "12px",
+    padding: "16px",
+    marginBottom: "20px",
+  },
+
+  upgradeInfoTitle: {
+    margin: "0 0 10px",
+    fontSize: "14px",
+    fontWeight: "700",
+    color: "#B76E79",
+  },
+
+  upgradeInfoList: {
+    margin: 0,
+    paddingLeft: "20px",
+    fontSize: "13px",
+    color: "#4B5563",
+    lineHeight: 1.8,
+  },
+
+  upgradeForm: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "16px",
+  },
+
+  formGroup: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "6px",
+  },
+
+  formLabel: {
+    fontSize: "13px",
+    fontWeight: "600",
+    color: "#374151",
+  },
+
+  formInput: {
+    padding: "10px 12px",
+    border: "1px solid #E5E7EB",
+    borderRadius: "8px",
+    fontSize: "14px",
+    outline: "none",
+    fontFamily: "inherit",
+  },
+
+  formTextarea: {
+    padding: "10px 12px",
+    border: "1px solid #E5E7EB",
+    borderRadius: "8px",
+    fontSize: "14px",
+    outline: "none",
+    fontFamily: "inherit",
+    resize: "vertical",
+  },
+
+  formCheck: {
+    display: "flex",
+    alignItems: "flex-start",
+    gap: "8px",
+  },
+
+  formCheckbox: {
+    marginTop: "2px",
+    cursor: "pointer",
+  },
+
+  formCheckLabel: {
+    fontSize: "12px",
+    color: "#6B7280",
+    lineHeight: 1.5,
     cursor: "pointer",
   },
 };

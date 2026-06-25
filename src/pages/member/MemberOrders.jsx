@@ -1,9 +1,13 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function MemberOrders() {
-  const [orders] = useState([
+  const navigate = useNavigate();
+
+  const [orders, setOrders] = useState([
     {
       id: "INV-2026-001",
+      productId: "prod-001",
       date: "12 Juni 2026",
       time: "14:32",
       product: "Sofa Premium Scandinavian",
@@ -17,9 +21,11 @@ function MemberOrders() {
       tracking: "JNE123456789",
       icon: "🛋",
       deliveredAt: "15 Juni 2026",
+      hasReviewed: false,
     },
     {
       id: "INV-2026-002",
+      productId: "prod-002",
       date: "18 Juni 2026",
       time: "09:15",
       product: "Meja Makan Kayu Jati",
@@ -33,9 +39,11 @@ function MemberOrders() {
       tracking: "SC987654321",
       icon: "🪑",
       estimatedDelivery: "21 Juni 2026",
+      currentLocation: "Gudang Transit Bandung",
     },
     {
       id: "INV-2026-003",
+      productId: "prod-003",
       date: "19 Juni 2026",
       time: "16:48",
       product: "Lemari Minimalis 3 Pintu",
@@ -52,6 +60,7 @@ function MemberOrders() {
     },
     {
       id: "INV-2026-004",
+      productId: "prod-004",
       date: "05 Juni 2026",
       time: "10:30",
       product: "Kasur King Size Premium",
@@ -65,9 +74,11 @@ function MemberOrders() {
       tracking: "AA112233445",
       icon: "🛏",
       deliveredAt: "08 Juni 2026",
+      hasReviewed: true,
     },
     {
       id: "INV-2026-005",
+      productId: "prod-005",
       date: "28 Mei 2026",
       time: "13:20",
       product: "Rak Buku Dinding",
@@ -81,9 +92,11 @@ function MemberOrders() {
       tracking: "JT556677889",
       icon: "📚",
       deliveredAt: "01 Juni 2026",
+      hasReviewed: false,
     },
     {
       id: "INV-2026-006",
+      productId: "prod-006",
       date: "20 Mei 2026",
       time: "11:45",
       product: "Lampu Gantung Kristal",
@@ -107,7 +120,13 @@ function MemberOrders() {
   const [showModal, setShowModal] = useState(false);
   const itemsPerPage = 4;
 
-  // Filter & search
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [showTrackingModal, setShowTrackingModal] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [reviewData, setReviewData] = useState({ rating: 0, comment: "" });
+  const [cancelReason, setCancelReason] = useState("");
+  const [orderToAction, setOrderToAction] = useState(null);
+
   const filteredOrders = orders.filter((order) => {
     const matchesFilter =
       activeFilter === "all" ||
@@ -118,7 +137,6 @@ function MemberOrders() {
     return matchesFilter && matchesSearch;
   });
 
-  // Pagination
   const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedOrders = filteredOrders.slice(
@@ -126,14 +144,12 @@ function MemberOrders() {
     startIndex + itemsPerPage
   );
 
-  // Stats
   const totalSpending = orders
     .filter((o) => o.status === "Selesai")
     .reduce((sum, o) => sum + o.total, 0);
   const statusCount = (status) =>
     orders.filter((o) => o.status === status).length;
 
-  // Handlers
   const handleFilterChange = (filter) => {
     setActiveFilter(filter);
     setCurrentPage(1);
@@ -159,27 +175,91 @@ function MemberOrders() {
   };
 
   const handleTrackOrder = (order) => {
-    alert(
-      `Lacak Pesanan ${order.id}\n\nKurir: ${order.courier}\nNo. Resi: ${order.tracking}\n\nEstimasi sampai: ${order.estimatedDelivery}`
-    );
+    setOrderToAction(order);
+    setShowTrackingModal(true);
   };
 
   const handleCancelOrder = (order) => {
-    if (confirm(`Batalkan pesanan ${order.id}?`)) {
-      alert(`Pesanan ${order.id} berhasil dibatalkan.`);
-    }
-  };
-
-  const handleBuyAgain = (order) => {
-    alert(`Membeli lagi: ${order.product}\n\nMengarahkan ke halaman produk...`);
+    setOrderToAction(order);
+    setCancelReason("");
+    setShowCancelModal(true);
   };
 
   const handleReview = (order) => {
-    alert(`Berikan ulasan untuk: ${order.product}`);
+    setOrderToAction(order);
+    setReviewData({ rating: 0, comment: "" });
+    setShowReviewModal(true);
+  };
+
+  const handleBuyAgain = (order) => {
+    navigate(`/products/${order.productId}?action=buy-again`);
   };
 
   const handleDownloadInvoice = (order) => {
     alert(`Mengunduh invoice ${order.id}...`);
+  };
+
+  const handleSubmitReview = () => {
+    if (reviewData.rating === 0) {
+      alert("Mohon berikan rating bintang!");
+      return;
+    }
+    if (!reviewData.comment.trim()) {
+      alert("Mohon isi komentar ulasan!");
+      return;
+    }
+
+    setOrders(
+      orders.map((o) =>
+        o.id === orderToAction.id ? { ...o, hasReviewed: true } : o
+      )
+    );
+
+    alert(
+      `Terima kasih atas ulasan Anda!\n\n` +
+        `Produk: ${orderToAction.product}\n` +
+        `Rating: ${"⭐".repeat(reviewData.rating)}\n` +
+        `Komentar: ${reviewData.comment}\n\n` +
+        `Ulasan Anda akan membantu customer lain.`
+    );
+
+    setShowReviewModal(false);
+    setReviewData({ rating: 0, comment: "" });
+  };
+
+  const handleSubmitCancel = () => {
+    if (!cancelReason.trim()) {
+      alert("Mohon isi alasan pembatalan!");
+      return;
+    }
+
+    setOrders(
+      orders.map((o) =>
+        o.id === orderToAction.id
+          ? {
+              ...o,
+              status: "Batal",
+              cancelledAt: new Date().toLocaleDateString("id-ID", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              }),
+              cancelReason: cancelReason,
+            }
+          : o
+      )
+    );
+
+    alert(
+      `Permintaan Pembatalan Berhasil Diajukan!\n\n` +
+        `Invoice: ${orderToAction.id}\n` +
+        `Alasan: ${cancelReason}\n\n` +
+        `Mohon tunggu konfirmasi dari admin dalam 1x24 jam.\n` +
+        `Anda akan menerima notifikasi melalui email.`
+    );
+
+    setShowCancelModal(false);
+    setCancelReason("");
   };
 
   const getTrackingSteps = (status) => {
@@ -218,8 +298,6 @@ function MemberOrders() {
 
   return (
     <div style={styles.wrapper}>
-
-      {/* HEADER */}
       <header style={styles.header}>
         <div>
           <div style={styles.breadcrumb}>
@@ -240,7 +318,6 @@ function MemberOrders() {
         </div>
       </header>
 
-      {/* STATS */}
       <div style={styles.statsGrid}>
         <div style={styles.statCard}>
           <div style={styles.statIconBox}>📦</div>
@@ -283,7 +360,6 @@ function MemberOrders() {
         </div>
       </div>
 
-      {/* FILTER BAR */}
       <div style={styles.filterBar}>
         <div style={styles.searchBox}>
           <span style={styles.searchIcon}>🔍</span>
@@ -320,7 +396,6 @@ function MemberOrders() {
         </div>
       </div>
 
-      {/* ORDERS LIST */}
       {paginatedOrders.length > 0 ? (
         <div style={styles.ordersList}>
           {paginatedOrders.map((order) => {
@@ -329,7 +404,6 @@ function MemberOrders() {
 
             return (
               <div key={order.id} style={styles.orderCard}>
-                {/* Card Header */}
                 <div style={styles.orderHeader}>
                   <div style={styles.orderHeaderLeft}>
                     <code style={styles.invoiceCode}>{order.id}</code>
@@ -354,7 +428,6 @@ function MemberOrders() {
                   </span>
                 </div>
 
-                {/* Card Body */}
                 <div style={styles.orderBody}>
                   <div style={styles.productThumb}>{order.icon}</div>
                   <div style={styles.productInfo}>
@@ -375,7 +448,6 @@ function MemberOrders() {
                   </div>
                 </div>
 
-                {/* Tracking Progress (only for active orders) */}
                 {(order.status === "Diproses" ||
                   order.status === "Dikirim" ||
                   order.status === "Selesai") && (
@@ -420,7 +492,6 @@ function MemberOrders() {
                   </div>
                 )}
 
-                {/* Card Footer - Actions */}
                 <div style={styles.orderFooter}>
                   <div style={styles.footerLeft}>
                     {order.courier !== "-" && (
@@ -481,10 +552,15 @@ function MemberOrders() {
                     {order.status === "Selesai" && (
                       <>
                         <button
-                          style={styles.actionBtnSecondary}
+                          style={
+                            order.hasReviewed
+                              ? styles.actionBtnDisabled
+                              : styles.actionBtnSecondary
+                          }
                           onClick={() => handleReview(order)}
+                          disabled={order.hasReviewed}
                         >
-                          ⭐ Ulasan
+                          {order.hasReviewed ? "✓ Sudah Diulas" : "⭐ Ulasan"}
                         </button>
                         <button
                           style={styles.actionBtnPrimary}
@@ -519,7 +595,6 @@ function MemberOrders() {
         </div>
       )}
 
-      {/* PAGINATION */}
       {totalPages > 1 && (
         <div style={styles.paginationWrap}>
           <p style={styles.paginationInfo}>
@@ -568,7 +643,6 @@ function MemberOrders() {
         </div>
       )}
 
-      {/* MODAL DETAIL */}
       {showModal && selectedOrder && (
         <div style={styles.modalOverlay} onClick={handleCloseModal}>
           <div
@@ -586,7 +660,6 @@ function MemberOrders() {
             </div>
 
             <div style={styles.modalBody}>
-              {/* Product Info */}
               <div style={styles.modalSection}>
                 <h4 style={styles.modalSectionTitle}>Produk</h4>
                 <div style={styles.modalProductRow}>
@@ -604,7 +677,6 @@ function MemberOrders() {
                 </div>
               </div>
 
-              {/* Order Info */}
               <div style={styles.modalSection}>
                 <h4 style={styles.modalSectionTitle}>Informasi Pesanan</h4>
                 <div style={styles.modalInfoRow}>
@@ -645,7 +717,6 @@ function MemberOrders() {
                 )}
               </div>
 
-              {/* Total */}
               <div style={styles.modalTotalBox}>
                 <span>Total Pembayaran</span>
                 <h2 style={styles.modalTotalValue}>
@@ -671,6 +742,224 @@ function MemberOrders() {
           </div>
         </div>
       )}
+
+      {showReviewModal && orderToAction && (
+        <div style={styles.modalOverlay} onClick={() => setShowReviewModal(false)}>
+          <div
+            style={styles.modalContent}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={styles.modalHeader}>
+              <div>
+                <h2 style={styles.modalTitle}>⭐ Berikan Ulasan</h2>
+                <p style={styles.modalSubtitle}>{orderToAction.product}</p>
+              </div>
+              <button style={styles.modalClose} onClick={() => setShowReviewModal(false)}>
+                ✕
+              </button>
+            </div>
+
+            <div style={styles.modalBody}>
+              <div style={styles.reviewSection}>
+                <label style={styles.reviewLabel}>Rating</label>
+                <div style={styles.starRating}>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <span
+                      key={star}
+                      style={{
+                        ...styles.star,
+                        color: star <= reviewData.rating ? "#FBBF24" : "#D1D5DB",
+                      }}
+                      onClick={() => setReviewData({ ...reviewData, rating: star })}
+                    >
+                      ★
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div style={styles.reviewSection}>
+                <label style={styles.reviewLabel}>Komentar</label>
+                <textarea
+                  style={styles.reviewTextarea}
+                  placeholder="Bagikan pengalaman Anda dengan produk ini..."
+                  value={reviewData.comment}
+                  onChange={(e) => setReviewData({ ...reviewData, comment: e.target.value })}
+                  rows="5"
+                />
+              </div>
+            </div>
+
+            <div style={styles.modalFooter}>
+              <button
+                style={styles.modalBtnSecondary}
+                onClick={() => setShowReviewModal(false)}
+              >
+                Batal
+              </button>
+              <button
+                style={styles.modalBtnPrimary}
+                onClick={handleSubmitReview}
+              >
+                Kirim Ulasan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showTrackingModal && orderToAction && (
+        <div style={styles.modalOverlay} onClick={() => setShowTrackingModal(false)}>
+          <div
+            style={{ ...styles.modalContent, maxWidth: "600px" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={styles.modalHeader}>
+              <div>
+                <h2 style={styles.modalTitle}>🚚 Lacak Pesanan</h2>
+                <p style={styles.modalSubtitle}>{orderToAction.id}</p>
+              </div>
+              <button style={styles.modalClose} onClick={() => setShowTrackingModal(false)}>
+                ✕
+              </button>
+            </div>
+
+            <div style={styles.modalBody}>
+              <div style={styles.mapContainer}>
+                <div style={styles.mapPlaceholder}>
+                  <div style={styles.mapIcon}>🗺️</div>
+                  <p style={styles.mapText}>Peta Pelacakan</p>
+                  <p style={styles.mapSubtext}>
+                    {orderToAction.currentLocation || "Dalam perjalanan"}
+                  </p>
+                </div>
+              </div>
+
+              <div style={styles.trackingInfo}>
+                <div style={styles.trackingInfoRow}>
+                  <span style={styles.trackingInfoLabel}>Kurir</span>
+                  <strong style={styles.trackingInfoValue}>{orderToAction.courier}</strong>
+                </div>
+                <div style={styles.trackingInfoRow}>
+                  <span style={styles.trackingInfoLabel}>No. Resi</span>
+                  <strong style={styles.trackingInfoValue}>
+                    <code style={styles.trackingCode}>{orderToAction.tracking}</code>
+                  </strong>
+                </div>
+                <div style={styles.trackingInfoRow}>
+                  <span style={styles.trackingInfoLabel}>Estimasi Tiba</span>
+                  <strong style={styles.trackingInfoValue}>{orderToAction.estimatedDelivery}</strong>
+                </div>
+              </div>
+
+              <div style={styles.trackingTimeline}>
+                <div style={styles.timelineItem}>
+                  <div style={styles.timelineDot}></div>
+                  <div style={styles.timelineContent}>
+                    <p style={styles.timelineTitle}>Pesanan Dibuat</p>
+                    <p style={styles.timelineTime}>{orderToAction.date}</p>
+                  </div>
+                </div>
+                <div style={styles.timelineItem}>
+                  <div style={styles.timelineDot}></div>
+                  <div style={styles.timelineContent}>
+                    <p style={styles.timelineTitle}>Sedang Dikemas</p>
+                    <p style={styles.timelineTime}>Gudang Pusat Jakarta</p>
+                  </div>
+                </div>
+                <div style={styles.timelineItem}>
+                  <div style={{ ...styles.timelineDot, background: "#B76E79" }}></div>
+                  <div style={styles.timelineContent}>
+                    <p style={{ ...styles.timelineTitle, color: "#B76E79", fontWeight: "700" }}>
+                      Dalam Pengiriman
+                    </p>
+                    <p style={styles.timelineTime}>{orderToAction.currentLocation || "Dalam perjalanan"}</p>
+                  </div>
+                </div>
+                <div style={styles.timelineItem}>
+                  <div style={{ ...styles.timelineDot, background: "#E5E7EB" }}></div>
+                  <div style={styles.timelineContent}>
+                    <p style={{ ...styles.timelineTitle, color: "#9CA3AF" }}>Tiba di Tujuan</p>
+                    <p style={styles.timelineTime}>Estimasi: {orderToAction.estimatedDelivery}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style={styles.modalFooter}>
+              <button
+                style={styles.modalBtnSecondary}
+                onClick={() => setShowTrackingModal(false)}
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showCancelModal && orderToAction && (
+        <div style={styles.modalOverlay} onClick={() => setShowCancelModal(false)}>
+          <div
+            style={styles.modalContent}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={styles.modalHeader}>
+              <div>
+                <h2 style={styles.modalTitle}>Batalkan Pesanan</h2>
+                <p style={styles.modalSubtitle}>{orderToAction.id}</p>
+              </div>
+              <button style={styles.modalClose} onClick={() => setShowCancelModal(false)}>
+                ✕
+              </button>
+            </div>
+
+            <div style={styles.modalBody}>
+              <div style={styles.cancelWarning}>
+                <p style={styles.cancelWarningIcon}>⚠️</p>
+                <p style={styles.cancelWarningText}>
+                  Pesanan yang dibatalkan tidak dapat dikembalikan. Mohon isi alasan pembatalan di bawah ini.
+                </p>
+              </div>
+
+              <div style={styles.cancelSection}>
+                <label style={styles.cancelLabel}>Alasan Pembatalan</label>
+                <textarea
+                  style={styles.cancelTextarea}
+                  placeholder="Jelaskan alasan Anda membatalkan pesanan ini..."
+                  value={cancelReason}
+                  onChange={(e) => setCancelReason(e.target.value)}
+                  rows="5"
+                />
+              </div>
+
+              <div style={styles.cancelNotice}>
+                <p style={styles.cancelNoticeTitle}>📋 Pemberitahuan:</p>
+                <ul style={styles.cancelNoticeList}>
+                  <li>Permintaan pembatalan akan diproses dalam 1x24 jam</li>
+                  <li>Anda akan menerima konfirmasi melalui email</li>
+                  <li>Dana akan dikembalikan sesuai metode pembayaran awal</li>
+                </ul>
+              </div>
+            </div>
+
+            <div style={styles.modalFooter}>
+              <button
+                style={styles.modalBtnSecondary}
+                onClick={() => setShowCancelModal(false)}
+              >
+                Batal
+              </button>
+              <button
+                style={styles.cancelBtn}
+                onClick={handleSubmitCancel}
+              >
+                Konfirmasi Pembatalan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -685,46 +974,38 @@ const styles = {
     maxWidth: "1400px",
     margin: "0 auto",
   },
-
   header: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "flex-start",
     marginBottom: "24px",
   },
-
   breadcrumb: {
     fontSize: "13px",
     color: "#9CA3AF",
     marginBottom: "4px",
   },
-
   breadcrumbSep: {
     margin: "0 6px",
   },
-
   breadcrumbCurrent: {
     color: "#4B5563",
   },
-
   pageTitle: {
     margin: "0 0 6px",
     fontSize: "24px",
     fontWeight: "700",
     color: "#111827",
   },
-
   pageSubtitle: {
     margin: 0,
     fontSize: "14px",
     color: "#6B7280",
   },
-
   headerActions: {
     display: "flex",
     gap: "8px",
   },
-
   exportBtn: {
     padding: "10px 16px",
     background: "#fff",
@@ -735,14 +1016,12 @@ const styles = {
     color: "#4B5563",
     cursor: "pointer",
   },
-
   statsGrid: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))",
     gap: "16px",
     marginBottom: "24px",
   },
-
   statCard: {
     background: "#fff",
     padding: "20px",
@@ -752,7 +1031,6 @@ const styles = {
     alignItems: "center",
     gap: "14px",
   },
-
   statIconBox: {
     width: "48px",
     height: "48px",
@@ -764,32 +1042,27 @@ const styles = {
     fontSize: "22px",
     flexShrink: 0,
   },
-
   statLabel: {
     margin: "0 0 4px",
     fontSize: "12px",
     color: "#6B7280",
     fontWeight: "500",
   },
-
   statValue: {
     margin: "0 0 4px",
     fontSize: "22px",
     fontWeight: "700",
     color: "#111827",
   },
-
   statTrend: {
     margin: 0,
     fontSize: "12px",
     color: "#6B7280",
   },
-
   trendUp: {
     color: "#059669",
     fontWeight: "600",
   },
-
   filterBar: {
     background: "#fff",
     padding: "16px",
@@ -802,7 +1075,6 @@ const styles = {
     gap: "16px",
     flexWrap: "wrap",
   },
-
   searchBox: {
     display: "flex",
     alignItems: "center",
@@ -813,12 +1085,10 @@ const styles = {
     padding: "8px 14px",
     minWidth: "280px",
   },
-
   searchIcon: {
     fontSize: "14px",
     color: "#9CA3AF",
   },
-
   searchInput: {
     border: "none",
     background: "transparent",
@@ -827,13 +1097,11 @@ const styles = {
     color: "#111827",
     width: "100%",
   },
-
   tabs: {
     display: "flex",
     gap: "6px",
     flexWrap: "wrap",
   },
-
   tab: {
     padding: "8px 14px",
     background: "#fff",
@@ -847,13 +1115,11 @@ const styles = {
     alignItems: "center",
     gap: "6px",
   },
-
   tabActive: {
     background: "#B76E79",
     color: "#fff",
     borderColor: "#B76E79",
   },
-
   tabCount: {
     padding: "2px 7px",
     background: "#F3F4F6",
@@ -861,26 +1127,22 @@ const styles = {
     fontSize: "11px",
     fontWeight: "600",
   },
-
   tabCountActive: {
     background: "rgba(255,255,255,0.25)",
     color: "#fff",
   },
-
   ordersList: {
     display: "flex",
     flexDirection: "column",
     gap: "16px",
     marginBottom: "16px",
   },
-
   orderCard: {
     background: "#fff",
     borderRadius: "14px",
     border: "1px solid #E5E7EB",
     overflow: "hidden",
   },
-
   orderHeader: {
     display: "flex",
     justifyContent: "space-between",
@@ -889,13 +1151,11 @@ const styles = {
     background: "#FAFAFA",
     borderBottom: "1px solid #F3F4F6",
   },
-
   orderHeaderLeft: {
     display: "flex",
     alignItems: "center",
     gap: "14px",
   },
-
   invoiceCode: {
     background: "#fff",
     border: "1px solid #E5E7EB",
@@ -906,12 +1166,10 @@ const styles = {
     color: "#111827",
     fontWeight: "600",
   },
-
   orderDate: {
     fontSize: "13px",
     color: "#6B7280",
   },
-
   statusBadge: {
     display: "inline-flex",
     alignItems: "center",
@@ -921,20 +1179,17 @@ const styles = {
     fontSize: "12px",
     fontWeight: "600",
   },
-
   statusDot: {
     width: "6px",
     height: "6px",
     borderRadius: "50%",
   },
-
   orderBody: {
     display: "flex",
     alignItems: "center",
     gap: "16px",
     padding: "20px",
   },
-
   productThumb: {
     width: "64px",
     height: "64px",
@@ -946,36 +1201,30 @@ const styles = {
     fontSize: "30px",
     flexShrink: 0,
   },
-
   productInfo: {
     flex: 1,
     minWidth: 0,
   },
-
   productName: {
     margin: "0 0 4px",
     fontSize: "15px",
     fontWeight: "700",
     color: "#111827",
   },
-
   productMeta: {
     margin: "0 0 6px",
     fontSize: "13px",
     color: "#6B7280",
   },
-
   productAddress: {
     margin: 0,
     fontSize: "12px",
     color: "#9CA3AF",
   },
-
   productTotal: {
     textAlign: "right",
     flexShrink: 0,
   },
-
   totalLabel: {
     margin: "0 0 2px",
     fontSize: "11px",
@@ -983,20 +1232,17 @@ const styles = {
     textTransform: "uppercase",
     letterSpacing: "0.5px",
   },
-
   totalValue: {
     margin: "0 0 4px",
     fontSize: "18px",
     fontWeight: "700",
     color: "#B76E79",
   },
-
   paymentMethod: {
     margin: 0,
     fontSize: "12px",
     color: "#6B7280",
   },
-
   trackingBar: {
     display: "flex",
     alignItems: "flex-start",
@@ -1006,7 +1252,6 @@ const styles = {
     borderBottom: "1px solid #F3F4F6",
     gap: "0",
   },
-
   trackingStep: {
     flex: 1,
     display: "flex",
@@ -1015,7 +1260,6 @@ const styles = {
     position: "relative",
     gap: "8px",
   },
-
   trackingDot: {
     width: "32px",
     height: "32px",
@@ -1028,12 +1272,10 @@ const styles = {
     border: "3px solid #fff",
     boxShadow: "0 0 0 1px #E5E7EB",
   },
-
   trackingLabel: {
     fontSize: "11px",
     textAlign: "center",
   },
-
   trackingLine: {
     position: "absolute",
     top: "16px",
@@ -1042,7 +1284,6 @@ const styles = {
     height: "2px",
     zIndex: 1,
   },
-
   orderFooter: {
     display: "flex",
     justifyContent: "space-between",
@@ -1051,14 +1292,12 @@ const styles = {
     gap: "12px",
     flexWrap: "wrap",
   },
-
   footerLeft: {
     display: "flex",
     alignItems: "center",
     gap: "14px",
     flexWrap: "wrap",
   },
-
   courierInfo: {
     fontSize: "12px",
     color: "#4B5563",
@@ -1066,7 +1305,6 @@ const styles = {
     alignItems: "center",
     gap: "4px",
   },
-
   trackingCode: {
     background: "#F3F4F6",
     padding: "2px 6px",
@@ -1075,31 +1313,26 @@ const styles = {
     fontSize: "11px",
     color: "#4B5563",
   },
-
   deliveredInfo: {
     fontSize: "12px",
     color: "#059669",
     fontWeight: "600",
   },
-
   cancelledInfo: {
     fontSize: "12px",
     color: "#DC2626",
     fontWeight: "600",
   },
-
   estimatedInfo: {
     fontSize: "12px",
     color: "#D97706",
     fontWeight: "600",
   },
-
   footerActions: {
     display: "flex",
     gap: "8px",
     flexWrap: "wrap",
   },
-
   actionBtnPrimary: {
     padding: "8px 14px",
     background: "#B76E79",
@@ -1110,7 +1343,6 @@ const styles = {
     color: "#fff",
     cursor: "pointer",
   },
-
   actionBtnSecondary: {
     padding: "8px 14px",
     background: "#fff",
@@ -1121,7 +1353,6 @@ const styles = {
     color: "#4B5563",
     cursor: "pointer",
   },
-
   actionBtnDanger: {
     padding: "8px 14px",
     background: "#fff",
@@ -1132,7 +1363,16 @@ const styles = {
     color: "#DC2626",
     cursor: "pointer",
   },
-
+  actionBtnDisabled: {
+    padding: "8px 14px",
+    background: "#F3F4F6",
+    border: "1px solid #E5E7EB",
+    borderRadius: "8px",
+    fontSize: "13px",
+    fontWeight: "600",
+    color: "#9CA3AF",
+    cursor: "not-allowed",
+  },
   emptyState: {
     background: "#fff",
     padding: "60px 24px",
@@ -1141,25 +1381,21 @@ const styles = {
     textAlign: "center",
     marginBottom: "16px",
   },
-
   emptyIcon: {
     fontSize: "48px",
     marginBottom: "16px",
   },
-
   emptyTitle: {
     margin: "0 0 8px",
     fontSize: "18px",
     fontWeight: "700",
     color: "#111827",
   },
-
   emptyDesc: {
     margin: "0 0 20px",
     fontSize: "14px",
     color: "#6B7280",
   },
-
   emptyBtn: {
     padding: "10px 20px",
     background: "#B76E79",
@@ -1170,7 +1406,6 @@ const styles = {
     color: "#fff",
     cursor: "pointer",
   },
-
   paginationWrap: {
     background: "#fff",
     padding: "16px 24px",
@@ -1183,18 +1418,15 @@ const styles = {
     flexWrap: "wrap",
     gap: "12px",
   },
-
   paginationInfo: {
     margin: 0,
     fontSize: "13px",
     color: "#6B7280",
   },
-
   pagination: {
     display: "flex",
     gap: "4px",
   },
-
   pageBtn: {
     padding: "8px 14px",
     background: "#fff",
@@ -1205,19 +1437,15 @@ const styles = {
     color: "#4B5563",
     cursor: "pointer",
   },
-
   pageBtnActive: {
     background: "#B76E79",
     color: "#fff",
     borderColor: "#B76E79",
   },
-
   pageBtnDisabled: {
     opacity: 0.5,
     cursor: "not-allowed",
   },
-
-  /* MODAL */
   modalOverlay: {
     position: "fixed",
     top: 0,
@@ -1231,7 +1459,6 @@ const styles = {
     zIndex: 1000,
     padding: "20px",
   },
-
   modalContent: {
     background: "#fff",
     borderRadius: "16px",
@@ -1241,7 +1468,6 @@ const styles = {
     overflowY: "auto",
     boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
   },
-
   modalHeader: {
     display: "flex",
     justifyContent: "space-between",
@@ -1249,21 +1475,18 @@ const styles = {
     padding: "20px 24px",
     borderBottom: "1px solid #E5E7EB",
   },
-
   modalTitle: {
     margin: "0 0 4px",
     fontSize: "18px",
     fontWeight: "700",
     color: "#111827",
   },
-
   modalSubtitle: {
     margin: 0,
     fontSize: "13px",
     color: "#6B7280",
     fontFamily: "monospace",
   },
-
   modalClose: {
     width: "32px",
     height: "32px",
@@ -1276,15 +1499,12 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
   },
-
   modalBody: {
     padding: "20px 24px",
   },
-
   modalSection: {
     marginBottom: "20px",
   },
-
   modalSectionTitle: {
     margin: "0 0 12px",
     fontSize: "13px",
@@ -1293,7 +1513,6 @@ const styles = {
     textTransform: "uppercase",
     letterSpacing: "0.5px",
   },
-
   modalProductRow: {
     display: "flex",
     alignItems: "center",
@@ -1302,7 +1521,6 @@ const styles = {
     background: "#FAFAFA",
     borderRadius: "10px",
   },
-
   modalProductIcon: {
     width: "52px",
     height: "52px",
@@ -1314,20 +1532,17 @@ const styles = {
     fontSize: "24px",
     flexShrink: 0,
   },
-
   modalProductName: {
     margin: "0 0 4px",
     fontSize: "15px",
     fontWeight: "700",
     color: "#111827",
   },
-
   modalProductMeta: {
     margin: 0,
     fontSize: "13px",
     color: "#6B7280",
   },
-
   modalInfoRow: {
     display: "flex",
     justifyContent: "space-between",
@@ -1336,20 +1551,17 @@ const styles = {
     padding: "10px 0",
     borderBottom: "1px solid #F3F4F6",
   },
-
   modalInfoLabel: {
     fontSize: "13px",
     color: "#6B7280",
     flexShrink: 0,
   },
-
   modalInfoValue: {
     fontSize: "13px",
     color: "#111827",
     textAlign: "right",
     fontWeight: "600",
   },
-
   modalCode: {
     background: "#F3F4F6",
     padding: "2px 8px",
@@ -1357,7 +1569,6 @@ const styles = {
     fontFamily: "monospace",
     fontSize: "12px",
   },
-
   modalTotalBox: {
     display: "flex",
     justifyContent: "space-between",
@@ -1367,14 +1578,12 @@ const styles = {
     borderRadius: "10px",
     marginTop: "8px",
   },
-
   modalTotalValue: {
     margin: 0,
     fontSize: "22px",
     fontWeight: "700",
     color: "#B76E79",
   },
-
   modalFooter: {
     display: "flex",
     gap: "10px",
@@ -1382,7 +1591,6 @@ const styles = {
     borderTop: "1px solid #E5E7EB",
     justifyContent: "flex-end",
   },
-
   modalBtnSecondary: {
     padding: "10px 20px",
     background: "#fff",
@@ -1393,10 +1601,191 @@ const styles = {
     color: "#4B5563",
     cursor: "pointer",
   },
-
   modalBtnPrimary: {
     padding: "10px 20px",
     background: "#B76E79",
+    border: "none",
+    borderRadius: "10px",
+    fontSize: "14px",
+    fontWeight: "600",
+    color: "#fff",
+    cursor: "pointer",
+  },
+  reviewSection: {
+    marginBottom: "20px",
+  },
+  reviewLabel: {
+    display: "block",
+    marginBottom: "8px",
+    fontSize: "14px",
+    fontWeight: "600",
+    color: "#374151",
+  },
+  starRating: {
+    display: "flex",
+    gap: "8px",
+  },
+  star: {
+    fontSize: "32px",
+    cursor: "pointer",
+    transition: "transform 0.2s",
+  },
+  reviewTextarea: {
+    width: "100%",
+    padding: "12px",
+    border: "1px solid #E5E7EB",
+    borderRadius: "10px",
+    fontSize: "14px",
+    outline: "none",
+    boxSizing: "border-box",
+    resize: "vertical",
+    fontFamily: "inherit",
+  },
+  mapContainer: {
+    marginBottom: "20px",
+  },
+  mapPlaceholder: {
+    width: "100%",
+    height: "200px",
+    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    borderRadius: "12px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "#fff",
+  },
+  mapIcon: {
+    fontSize: "48px",
+    marginBottom: "10px",
+  },
+  mapText: {
+    margin: "0 0 4px",
+    fontSize: "16px",
+    fontWeight: "700",
+  },
+  mapSubtext: {
+    margin: 0,
+    fontSize: "13px",
+    opacity: 0.9,
+  },
+  trackingInfo: {
+    background: "#F9FAFB",
+    padding: "16px",
+    borderRadius: "10px",
+    marginBottom: "20px",
+  },
+  trackingInfoRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "8px 0",
+    borderBottom: "1px solid #E5E7EB",
+  },
+  trackingInfoLabel: {
+    fontSize: "13px",
+    color: "#6B7280",
+  },
+  trackingInfoValue: {
+    fontSize: "13px",
+    color: "#111827",
+    fontWeight: "600",
+  },
+  trackingTimeline: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "16px",
+  },
+  timelineItem: {
+    display: "flex",
+    gap: "12px",
+    alignItems: "flex-start",
+  },
+  timelineDot: {
+    width: "12px",
+    height: "12px",
+    borderRadius: "50%",
+    background: "#B76E79",
+    flexShrink: 0,
+    marginTop: "4px",
+  },
+  timelineContent: {
+    flex: 1,
+  },
+  timelineTitle: {
+    margin: "0 0 4px",
+    fontSize: "14px",
+    fontWeight: "600",
+    color: "#111827",
+  },
+  timelineTime: {
+    margin: 0,
+    fontSize: "12px",
+    color: "#6B7280",
+  },
+  cancelWarning: {
+    background: "#FEF3C7",
+    border: "1px solid #FCD34D",
+    borderRadius: "10px",
+    padding: "16px",
+    marginBottom: "20px",
+    display: "flex",
+    gap: "12px",
+    alignItems: "flex-start",
+  },
+  cancelWarningIcon: {
+    margin: 0,
+    fontSize: "24px",
+  },
+  cancelWarningText: {
+    margin: 0,
+    fontSize: "13px",
+    color: "#92400E",
+    lineHeight: 1.6,
+  },
+  cancelSection: {
+    marginBottom: "20px",
+  },
+  cancelLabel: {
+    display: "block",
+    marginBottom: "8px",
+    fontSize: "14px",
+    fontWeight: "600",
+    color: "#374151",
+  },
+  cancelTextarea: {
+    width: "100%",
+    padding: "12px",
+    border: "1px solid #E5E7EB",
+    borderRadius: "10px",
+    fontSize: "14px",
+    outline: "none",
+    boxSizing: "border-box",
+    resize: "vertical",
+    fontFamily: "inherit",
+  },
+  cancelNotice: {
+    background: "#F0F9FF",
+    border: "1px solid #BAE6FD",
+    borderRadius: "10px",
+    padding: "16px",
+  },
+  cancelNoticeTitle: {
+    margin: "0 0 8px",
+    fontSize: "13px",
+    fontWeight: "700",
+    color: "#0369A1",
+  },
+  cancelNoticeList: {
+    margin: 0,
+    paddingLeft: "20px",
+    fontSize: "12px",
+    color: "#0C4A6E",
+    lineHeight: 1.8,
+  },
+  cancelBtn: {
+    padding: "10px 20px",
+    background: "#DC2626",
     border: "none",
     borderRadius: "10px",
     fontSize: "14px",

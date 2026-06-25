@@ -11,13 +11,15 @@ import Loading from './components/Loading';
 import ErrorBoundary from './components/ErrorBoundary';
 
 import ProductCRM from "./pages/admin/ProductCRM";
+// import Checkout from "./pages/member/Checkout"; // ❌ HAPUS INI (akan pakai lazy loading)
+// import ProductDetail from "./pages/guest/ProductDetail"; // ❌ HAPUS INI (sudah ada di bawah)
 
 // =====================
 // Guest Pages
 // =====================
 const Home = React.lazy(() => import('./pages/guest/Home'));
 const Produk = React.lazy(() => import('./pages/guest/Produk'));
-const ProductDetail = React.lazy(() => import('./pages/guest/ProductDetail'));
+const ProductDetail = React.lazy(() => import('./pages/guest/ProductDetail')); // ✅ INI YANG DIPAKAI
 const FavoriteProducts = React.lazy(() => import('./pages/guest/FavoriteProducts'));
 
 const About = React.lazy(() => import('./pages/guest/About'));
@@ -59,7 +61,6 @@ const LoginCustomer = React.lazy(() =>
   import('./pages/guest/LoginCustomer')
 );
 
-// ✅ TAMBAHAN FIX
 const RegisterPilih = React.lazy(() =>
   import("./pages/auth/RegisterPilih")
 );
@@ -132,6 +133,10 @@ const CustomFurnitureCustomer = React.lazy(() =>
 const CustomFurnitureAdmin = React.lazy(() =>
   import('./pages/admin/CustomFurnitureAdmin')
 );
+
+// =====================
+// Member Pages
+// =====================
 const MemberDashboard = React.lazy(() =>
   import("./pages/member/MemberDashboard")
 );
@@ -156,7 +161,10 @@ const MemberProfile = React.lazy(() =>
   import("./pages/member/MemberProfile")
 );
 
-
+// ✅ TAMBAHKAN INI:
+const Checkout = React.lazy(() =>
+  import("./pages/member/Checkout")
+);
 
 function App() {
   return (
@@ -184,72 +192,39 @@ function App() {
               <Route path="discount-claim" element={<DiscountClaim />} />
               <Route path="membership-form" element={<MembershipForm />} />
               <Route path="custom-furniture" element={<CustomFurnitureCustomer />} />
-
             </Route>
 
             {/* ===================== */}
             {/* AUTH */}
             {/* ===================== */}
             <Route element={<AuthLayout />}>
-
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/login-admin" element={<LoginAdmin />} />
               <Route path="/login-customer" element={<LoginCustomer />} />
-
-              {/* 🔥 FIX TAMBAHAN INI */}
               <Route path="/register-pilih" element={<RegisterPilih />} />
               <Route path="/register-admin" element={<RegisterAdmin />} />
-
             </Route>
-
-
 
             {/* ===================== */}
             {/* MEMBER */}
             {/* ===================== */}
             <Route element={<MemberLayout />}>
-
-              <Route
-                path="/member/dashboard"
-                element={<MemberDashboard />}
-              />
-
-              <Route
-                path="/member/orders"
-                element={<MemberOrders />}
-              />
-
-              <Route
-                path="/member/rewards"
-                element={<MemberRewards />}
-              />
-
-              <Route
-                path="/member/vouchers"
-                element={<MemberVoucher />}
-              />
-
-              <Route
-                path="/member/history"
-                element={<MemberHistory />}
-              />
-
-              <Route
-                path="/member/profile"
-                element={<MemberProfile />}
-              />
-
+              <Route path="/member/dashboard" element={<MemberDashboard />} />
+              <Route path="/member/orders" element={<MemberOrders />} />
+              <Route path="/member/rewards" element={<MemberRewards />} />
+              <Route path="/member/vouchers" element={<MemberVoucher />} />
+              <Route path="/member/history" element={<MemberHistory />} />
+              <Route path="/member/profile" element={<MemberProfile />} />
+              
+              {/* ✅ TAMBAHKAN ROUTE INI: */}
+              <Route path="/checkout" element={<Checkout />} />
             </Route>
-
-
-
 
             {/* ===================== */}
             {/* ADMIN */}
             {/* ===================== */}
             <Route element={<AdminLayout />}>
-
               <Route path="/admin/dashboard" element={<Dashboard />} />
               <Route path="/admin/customers" element={<Customers />} />
               <Route path="/customers/:id" element={<CustomerDetail />} />
