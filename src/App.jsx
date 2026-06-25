@@ -11,15 +11,15 @@ import Loading from './components/Loading';
 import ErrorBoundary from './components/ErrorBoundary';
 
 import ProductCRM from "./pages/admin/ProductCRM";
-// import Checkout from "./pages/member/Checkout"; // ❌ HAPUS INI (akan pakai lazy loading)
-// import ProductDetail from "./pages/guest/ProductDetail"; // ❌ HAPUS INI (sudah ada di bawah)
+import Cart from "./pages/guest/Cart";
+import GuestCheckout from "./pages/guest/GuestCheckout"; // ✅ Import GuestCheckout
 
 // =====================
 // Guest Pages
 // =====================
 const Home = React.lazy(() => import('./pages/guest/Home'));
 const Produk = React.lazy(() => import('./pages/guest/Produk'));
-const ProductDetail = React.lazy(() => import('./pages/guest/ProductDetail')); // ✅ INI YANG DIPAKAI
+const ProductDetail = React.lazy(() => import('./pages/guest/ProductDetail'));
 const FavoriteProducts = React.lazy(() => import('./pages/guest/FavoriteProducts'));
 
 const About = React.lazy(() => import('./pages/guest/About'));
@@ -161,7 +161,6 @@ const MemberProfile = React.lazy(() =>
   import("./pages/member/MemberProfile")
 );
 
-// ✅ TAMBAHKAN INI:
 const Checkout = React.lazy(() =>
   import("./pages/member/Checkout")
 );
@@ -192,6 +191,10 @@ function App() {
               <Route path="discount-claim" element={<DiscountClaim />} />
               <Route path="membership-form" element={<MembershipForm />} />
               <Route path="custom-furniture" element={<CustomFurnitureCustomer />} />
+              
+              {/* ✅ ROUTE GUEST CHECKOUT & CART */}
+              <Route path="cart" element={<Cart />} />
+              <Route path="guest-checkout" element={<GuestCheckout />} />
             </Route>
 
             {/* ===================== */}
@@ -216,8 +219,6 @@ function App() {
               <Route path="/member/vouchers" element={<MemberVoucher />} />
               <Route path="/member/history" element={<MemberHistory />} />
               <Route path="/member/profile" element={<MemberProfile />} />
-              
-              {/* ✅ TAMBAHKAN ROUTE INI: */}
               <Route path="/checkout" element={<Checkout />} />
             </Route>
 

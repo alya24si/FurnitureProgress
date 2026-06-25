@@ -1,16 +1,62 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   FiUser,
   FiHeart,
-  FiShoppingCart
+  FiShoppingCart,
+  FiLogOut
 } from 'react-icons/fi';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom'; // ✅ TAMBAHKAN useLocation
 import Header from '../Reusable/Header';
 import Container from '../Reusable/Container';
 import Cart from '../Reusable/Cart';
+import { supabase } from '../services/supabase';
 
 const HeaderSection = () => {
+  const navigate = useNavigate();
+  const location = useLocation(); // ✅ TAMBAHKAN INI untuk deteksi halaman aktif
   const [showCart, setShowCart] = useState(false);
+  const [customer, setCustomer] = useState(null);
+  const [cartCount, setCartCount] = useState(0);
+
+  // ✅ TAMBAHKAN useEffect untuk cek login status
+  useEffect(() => {
+    const storedCustomer = localStorage.getItem("customer");
+    if (storedCustomer) {
+      setCustomer(JSON.parse(storedCustomer));
+    }
+
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    setCartCount(cart.length);
+  }, []);
+
+  // ✅ TAMBAHKAN fungsi logout
+  const handleLogout = async () => {
+    if (!confirm("Yakin ingin logout?")) return;
+
+    try {
+      await supabase.auth.signOut();
+      
+      localStorage.removeItem("customer");
+      localStorage.removeItem("cart");
+      localStorage.removeItem("cartItems");
+      localStorage.removeItem("selectedProduct");
+      localStorage.removeItem("redirectAfterLogin");
+
+      setCustomer(null);
+      setCartCount(0);
+
+      alert("Logout berhasil!");
+      navigate("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+      alert("Gagal logout. Silakan coba lagi.");
+    }
+  };
+
+  // ✅ FUNGSI BARU: Cek apakah menu aktif
+  const isActive = (path) => {
+    return location.pathname === path;
+  };
 
   return (
     <Header style={styles.header}>
@@ -38,7 +84,8 @@ const HeaderSection = () => {
                 to="/"
                 style={{
                   ...styles.navLink,
-                  fontWeight: 600
+                  fontWeight: isActive('/') ? 700 : 400, // ✅ DINAMIS
+                  color: isActive('/') ? '#6E39CB' : 'var(--text-dark)', // ✅ DINAMIS
                 }}
               >
                 Beranda
@@ -48,7 +95,11 @@ const HeaderSection = () => {
             <li>
               <Link
                 to="/products"
-                style={styles.navLink}
+                style={{
+                  ...styles.navLink,
+                  fontWeight: isActive('/products') ? 700 : 400, // ✅ DINAMIS
+                  color: isActive('/products') ? '#6E39CB' : 'var(--text-dark)', // ✅ DINAMIS
+                }}
               >
                 Produk
               </Link>
@@ -57,7 +108,11 @@ const HeaderSection = () => {
             <li>
               <Link
                 to="/about"
-                style={styles.navLink}
+                style={{
+                  ...styles.navLink,
+                  fontWeight: isActive('/about') ? 700 : 400, // ✅ DINAMIS
+                  color: isActive('/about') ? '#6E39CB' : 'var(--text-dark)', // ✅ DINAMIS
+                }}
               >
                 Tentang Kami
               </Link>
@@ -66,7 +121,11 @@ const HeaderSection = () => {
             <li>
               <Link
                 to="/contact"
-                style={styles.navLink}
+                style={{
+                  ...styles.navLink,
+                  fontWeight: isActive('/contact') ? 700 : 400, // ✅ DINAMIS
+                  color: isActive('/contact') ? '#6E39CB' : 'var(--text-dark)', // ✅ DINAMIS
+                }}
               >
                 Kontak
               </Link>
@@ -85,7 +144,7 @@ const HeaderSection = () => {
             <FiHeart />
           </Link>
 
-          {/* Keranjang */}
+          {/* Keranjang dengan Badge */}
           <div style={{ position: 'relative' }}>
             <button
               type="button"
@@ -94,10 +153,14 @@ const HeaderSection = () => {
                 ...styles.icon,
                 background: 'none',
                 border: 'none',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                position: 'relative'
               }}
             >
               <FiShoppingCart />
+              {cartCount > 0 && (
+                <span style={styles.cartBadge}>{cartCount}</span>
+              )}
             </button>
 
             {showCart && (
@@ -119,42 +182,65 @@ const HeaderSection = () => {
                     color: 'var(--text-light)'
                   }}
                 >
-                  Belum ada produk di keranjang.
+                  {cartCount > 0 
+                    ? `${cartCount} produk di keranjang` 
+                    : 'Belum ada produk di keranjang.'}
                 </p>
 
                 <Link
-                  to="/products"
+                  to="/cart"
                   style={styles.cartLink}
                 >
-                  Mulai Belanja
+                  {cartCount > 0 ? 'Lihat Keranjang' : 'Mulai Belanja'}
                 </Link>
               </Cart>
             )}
           </div>
 
-          {/* Akun */}
-          <Link
-            to="/login"
-            style={styles.icon}
-          >
-            <FiUser />
-          </Link>
+          {/* KONDISIONAL: Jika sudah login atau belum */}
+          {customer ? (
+            <>
+              <Link
+                to="/member/dashboard"
+                style={styles.profileBtn}
+              >
+                <FiUser />
+                <span style={styles.profileName}>
+                  {customer.full_name || customer.email}
+                </span>
+              </Link>
+              <button
+                onClick={handleLogout}
+                style={styles.logoutBtn}
+              >
+                <FiLogOut />
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                style={styles.icon}
+              >
+                <FiUser />
+              </Link>
 
-          {/* Login */}
-          <Link
-            to="/login"
-            style={styles.loginBtn}
-          >
-            Login
-          </Link>
+              <Link
+                to="/login"
+                style={styles.loginBtn}
+              >
+                Login
+              </Link>
 
-          {/* Register */}
-          <Link
-            to="/register-pilih"
-            style={styles.registerBtn}
-          >
-            Daftar
-          </Link>
+              <Link
+                to="/register-pilih"
+                style={styles.registerBtn}
+              >
+                Daftar
+              </Link>
+            </>
+          )}
         </div>
       </Container>
     </Header>
@@ -195,7 +281,8 @@ const styles = {
   navLink: {
     color: 'var(--text-dark)',
     fontSize: '16px',
-    textDecoration: 'none'
+    textDecoration: 'none',
+    transition: 'all 0.2s', // ✅ Smooth transition
   },
 
   icons: {
@@ -244,7 +331,58 @@ const styles = {
     fontWeight: 600,
     color: '#6E39CB',
     textDecoration: 'none'
-  }
+  },
+
+  cartBadge: {
+    position: 'absolute',
+    top: '-8px',
+    right: '-8px',
+    background: '#EF4444',
+    color: '#fff',
+    fontSize: '11px',
+    fontWeight: '700',
+    width: '20px',
+    height: '20px',
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  profileBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '8px 16px',
+    background: '#FDF2F4',
+    color: '#B76E79',
+    borderRadius: '8px',
+    textDecoration: 'none',
+    fontSize: '14px',
+    fontWeight: '600',
+  },
+
+  profileName: {
+    maxWidth: '150px',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+
+  logoutBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    padding: '8px 16px',
+    background: '#fff',
+    color: '#DC2626',
+    border: '2px solid #DC2626',
+    borderRadius: '8px',
+    fontSize: '14px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+  },
 };
 
 export default HeaderSection;
