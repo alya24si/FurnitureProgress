@@ -5,7 +5,10 @@ import {
   FiUsers,
   FiAward,
   FiActivity,
-  FiTrendingUp
+  FiTrendingUp,
+  FiPackage,
+  FiCheckCircle,
+  FiClock
 } from "react-icons/fi";
 import { motion } from "framer-motion";
 import SalesChart from "../../components/dashboard/SalesChart";
@@ -60,7 +63,6 @@ function Dashboard() {
   }, []);
 
   // ===================== LOGIKA REVENUE UPDATE =====================
-  // Menghitung omzet gabungan: total dari customer_purchases + total_spending dari memberships
   const purchaseRevenue = purchases.reduce((sum, item) => sum + Number(item.total || 0), 0);
   const membershipRevenue = members.reduce((sum, item) => sum + Number(item.total_spending || 0), 0);
   const totalRevenue = purchaseRevenue + membershipRevenue;
@@ -84,6 +86,31 @@ function Dashboard() {
       transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1], staggerChildren: 0.1 }
     }
   };
+
+  // ✅ Helper untuk Membership Tier
+  const membershipTiers = [
+    { 
+      label: "Gold", 
+      emoji: "🥇", 
+      value: totalGold, 
+      color: "#FFD700",
+      gradient: "linear-gradient(135deg, #FFD700, #FFA500)"
+    },
+    { 
+      label: "Silver", 
+      emoji: "🥈", 
+      value: totalSilver, 
+      color: "#C0C0C0",
+      gradient: "linear-gradient(135deg, #C0C0C0, #A8A8A8)"
+    },
+    { 
+      label: "Bronze", 
+      emoji: "🥉", 
+      value: totalBronze, 
+      color: "#CD7F32",
+      gradient: "linear-gradient(135deg, #CD7F32, #B87333)"
+    }
+  ];
 
   return (
     <motion.div
@@ -114,11 +141,9 @@ function Dashboard() {
           alignItems: "center"
         }}
       >
-        {/* Layer Efek Cahaya Ambient 3D */}
         <div style={{ position: "absolute", bottom: "-60px", left: "-60px", width: "280px", height: "280px", borderRadius: "50%", background: "radial-gradient(circle, rgba(228,165,184,0.18) 0%, rgba(0,0,0,0) 70%)", pointerEvents: "none" }} />
         <div style={{ position: "absolute", top: "-120px", right: "-30px", width: "420px", height: "420px", borderRadius: "50%", background: "linear-gradient(135deg, rgba(246,214,214,0.12) 0%, rgba(183,132,167,0.03) 100%)", filter: "blur(50px)", pointerEvents: "none" }} />
 
-        {/* Konten Sisi Kiri */}
         <div style={{ zIndex: 2 }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(255, 255, 255, 0.07)", padding: "8px 16px", borderRadius: "30px", border: "1px solid rgba(255,255,255,0.1)", marginBottom: "20px", backdropFilter: "blur(10px)" }}>
             <FiActivity style={{ color: "#E4A5B8" }} />
@@ -132,7 +157,6 @@ function Dashboard() {
           </p>
         </div>
 
-        {/* Konten Sisi Kanan (Floating Glass Card Pendapatan) */}
         <div style={{ zIndex: 2, background: "rgba(255, 255, 255, 0.05)", backdropFilter: "blur(20px)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: "24px", padding: "30px 40px", boxShadow: "0 20px 40px rgba(0,0,0,0.2)", textAlign: "right" }}>
           <span style={{ fontSize: "12px", textTransform: "uppercase", letterSpacing: "1.5px", color: "#E4A5B8", fontWeight: "700", display: "inline-flex", alignItems: "center", gap: "6px" }}>
             <FiTrendingUp /> Akumulasi Profit
@@ -168,56 +192,333 @@ function Dashboard() {
         </h2>
 
         <div style={{ width: "100%" }}>
-          {/* MENGALIRKAN ARRAY MEMBERS KE DALAM CHART SUPAYA BISA DIHITUNG GRAFIKNYA */}
           <SalesChart 
             purchases={purchases} 
-            members={members} // <-- Mengirim data members murni ke komponen anak
+            members={members}
             totalMembers={totalMembers} 
             totalCustomers={totalCustomers} 
           />
         </div>
       </motion.div>
 
-      {/* METRICS SPLIT VIEW */}
+      {/* ✅ METRICS SPLIT VIEW - UPGRADED */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))", gap: "25px" }}>
-        {/* MEMBERSHIP TIERS */}
-        <motion.div whileHover={{ y: -4 }} style={{ background: "#ffffff", padding: "35px", borderRadius: "24px", boxShadow: "0 10px 30px -5px rgba(183, 132, 167, 0.06)", border: "1px solid rgba(183, 132, 167, 0.1)" }}>
-          <h2 style={{ fontSize: "22px", fontWeight: "700", color: "#3A2436", marginBottom: "25px" }}>🎖️ Membership Tier</h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-            {[
-              { label: "🥇 Gold", value: totalGold, color: "#FFF4E3", textColor: "#C28C38" },
-              { label: "🥈 Silver", value: totalSilver, color: "#F1F2F6", textColor: "#5A6578" },
-              { label: "🥉 Bronze", value: totalBronze, color: "#FDF0EA", textColor: "#C86D46" }
-            ].map((tier, idx) => (
-              <div key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", borderRadius: "16px", background: "#FCFAF9", border: "1px solid rgba(183, 132, 167, 0.06)" }}>
-                <span style={{ fontWeight: "600", color: "#4A3546" }}>{tier.label}</span>
-                <span style={{ background: tier.color, color: tier.textColor, padding: "6px 16px", borderRadius: "20px", fontWeight: "700", fontSize: "14px" }}>{tier.value} Users</span>
+        
+        {/* MEMBERSHIP TIERS - UPGRADED DESIGN */}
+        <motion.div 
+          whileHover={{ y: -4 }}
+          style={{ 
+            background: "#ffffff", 
+            padding: "35px", 
+            borderRadius: "24px", 
+            boxShadow: "0 10px 30px -5px rgba(183, 132, 167, 0.06)", 
+            border: "1px solid rgba(183, 132, 167, 0.1)" 
+          }}
+        >
+          {/* Header */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "28px" }}>
+            <div style={{ display: "flex", gap: "14px", alignItems: "flex-start" }}>
+              <div style={{ 
+                width: "48px", 
+                height: "48px", 
+                background: "linear-gradient(135deg, #FFD700, #FFA500)", 
+                borderRadius: "14px", 
+                display: "flex", 
+                alignItems: "center", 
+                justifyContent: "center", 
+                color: "#fff",
+                boxShadow: "0 6px 16px rgba(255, 215, 0, 0.3)"
+              }}>
+                <FiAward size={24} />
               </div>
-            ))}
+              <div>
+                <h2 style={{ margin: "0 0 4px 0", fontSize: "20px", fontWeight: "700", color: "#1F2937", letterSpacing: "-0.3px" }}>
+                  Membership Tier
+                </h2>
+                <p style={{ margin: 0, fontSize: "13px", color: "#6B7280", fontWeight: "500" }}>
+                  Distribusi member berdasarkan level
+                </p>
+              </div>
+            </div>
+            <div style={{ 
+              background: "linear-gradient(135deg, #FDF2F4, #F6E8EB)", 
+              padding: "10px 18px", 
+              borderRadius: "12px", 
+              textAlign: "center",
+              border: "1px solid rgba(183, 110, 121, 0.15)"
+            }}>
+              <span style={{ display: "block", fontSize: "10px", fontWeight: "700", color: "#B76E79", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "2px" }}>Total</span>
+              <span style={{ display: "block", fontSize: "22px", fontWeight: "800", color: "#1F2937", lineHeight: 1 }}>{totalMembers}</span>
+            </div>
+          </div>
+
+          {/* Tier List */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+            {membershipTiers.map((tier, idx) => {
+              const percentage = totalMembers > 0 ? (tier.value / totalMembers) * 100 : 0;
+              return (
+                <motion.div 
+                  key={idx}
+                  whileHover={{ scale: 1.01, boxShadow: "0 8px 20px rgba(0,0,0,0.06)" }}
+                  style={{ 
+                    display: "flex", 
+                    justifyContent: "space-between", 
+                    alignItems: "center", 
+                    padding: "18px", 
+                    borderRadius: "16px", 
+                    background: "linear-gradient(135deg, #FAFAFA, #FFFFFF)", 
+                    border: "1px solid rgba(183, 110, 121, 0.08)",
+                    transition: "all 0.3s"
+                  }}
+                >
+                  {/* Left: Icon + Info + Progress */}
+                  <div style={{ display: "flex", gap: "14px", alignItems: "center", flex: 1 }}>
+                    <div style={{ 
+                      width: "44px", 
+                      height: "44px", 
+                      background: `linear-gradient(135deg, ${tier.color}20, ${tier.color}10)`, 
+                      borderRadius: "12px", 
+                      display: "flex", 
+                      alignItems: "center", 
+                      justifyContent: "center",
+                      border: `2px solid ${tier.color}40`,
+                      fontSize: "22px"
+                    }}>
+                      {tier.emoji}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <h4 style={{ margin: "0 0 8px 0", fontSize: "15px", fontWeight: "700", color: "#1F2937" }}>
+                        {tier.label}
+                      </h4>
+                      <div style={{ 
+                        width: "160px", 
+                        height: "6px", 
+                        background: "rgba(183, 110, 121, 0.1)", 
+                        borderRadius: "10px", 
+                        overflow: "hidden" 
+                      }}>
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${percentage}%` }}
+                          transition={{ duration: 1, ease: "easeOut" }}
+                          style={{ 
+                            height: "100%", 
+                            background: tier.gradient, 
+                            borderRadius: "10px" 
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right: Count + Percent */}
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "2px" }}>
+                    <span style={{ fontSize: "20px", fontWeight: "800", color: "#1F2937", lineHeight: 1 }}>
+                      {tier.value}
+                    </span>
+                    <span style={{ fontSize: "11px", color: "#6B7280", fontWeight: "600" }}>Users</span>
+                    <span style={{ fontSize: "12px", color: "#B76E79", fontWeight: "700" }}>
+                      {percentage.toFixed(1)}%
+                    </span>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         </motion.div>
 
-        {/* FURNITURE METRICS */}
-        <motion.div whileHover={{ y: -4 }} style={{ background: "#ffffff", padding: "35px", borderRadius: "24px", boxShadow: "0 10px 30px -5px rgba(183, 132, 167, 0.06)", border: "1px solid rgba(183, 132, 167, 0.1)" }}>
-          <h2 style={{ fontSize: "22px", fontWeight: "700", color: "#3A2436", marginBottom: "25px" }}>🛋️ Custom Furniture Status</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "15px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px", borderRadius: "16px", background: "#F6ECF0", border: "1px solid rgba(183, 132, 167, 0.15)" }}>
-              <div>
-                <p style={{ margin: 0, fontSize: "14px", color: "#B784A7", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.5px" }}>Total Permintaan</p>
-                <h3 style={{ margin: "5px 0 0 0", fontSize: "28px", fontWeight: "800", color: "#3A2436" }}>{customFurniture.length}</h3>
-              </div>
+        {/* FURNITURE METRICS - UPGRADED DESIGN */}
+        <motion.div 
+          whileHover={{ y: -4 }}
+          style={{ 
+            background: "#ffffff", 
+            padding: "35px", 
+            borderRadius: "24px", 
+            boxShadow: "0 10px 30px -5px rgba(183, 132, 167, 0.06)", 
+            border: "1px solid rgba(183, 132, 167, 0.1)" 
+          }}
+        >
+          {/* Header */}
+          <div style={{ display: "flex", gap: "14px", alignItems: "flex-start", marginBottom: "28px" }}>
+            <div style={{ 
+              width: "48px", 
+              height: "48px", 
+              background: "linear-gradient(135deg, #B76E79, #D49AA5)", 
+              borderRadius: "14px", 
+              display: "flex", 
+              alignItems: "center", 
+              justifyContent: "center", 
+              color: "#fff",
+              boxShadow: "0 6px 16px rgba(183, 110, 121, 0.3)"
+            }}>
+              <FiPackage size={24} />
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
-              <div style={{ padding: "18px", borderRadius: "16px", background: "#EBF9F3", border: "1px solid rgba(16,185,129,0.1)" }}>
-                <p style={{ margin: 0, fontSize: "13px", color: "#059669", fontWeight: "600" }}>✅ Lunas</p>
-                <h4 style={{ margin: "5px 0 0 0", fontSize: "24px", fontWeight: "800", color: "#064E3B" }}>{paidFurniture}</h4>
-              </div>
-              <div style={{ padding: "18px", borderRadius: "16px", background: "#FFF2F2", border: "1px solid rgba(239,68,68,0.1)" }}>
-                <p style={{ margin: 0, fontSize: "13px", color: "#DC2626", fontWeight: "600" }}>⏳ Belum Lunas</p>
-                <h4 style={{ margin: "5px 0 0 0", fontSize: "24px", fontWeight: "800", color: "#7F1D1D" }}>{unpaidFurniture}</h4>
-              </div>
+            <div>
+              <h2 style={{ margin: "0 0 4px 0", fontSize: "20px", fontWeight: "700", color: "#1F2937", letterSpacing: "-0.3px" }}>
+                Custom Furniture Status
+              </h2>
+              <p style={{ margin: 0, fontSize: "13px", color: "#6B7280", fontWeight: "500" }}>
+                Status pembayaran permintaan custom
+              </p>
             </div>
           </div>
+
+          {/* Total Requests Box */}
+          <div style={{ 
+            background: "linear-gradient(135deg, rgba(183, 110, 121, 0.08), rgba(212, 169, 116, 0.08))", 
+            padding: "24px", 
+            borderRadius: "16px", 
+            display: "flex", 
+            alignItems: "center", 
+            gap: "16px", 
+            marginBottom: "24px",
+            border: "1px solid rgba(183, 110, 121, 0.15)"
+          }}>
+            <div style={{ 
+              width: "48px", 
+              height: "48px", 
+              background: "linear-gradient(135deg, #B76E79, #D4A574)", 
+              borderRadius: "12px", 
+              display: "flex", 
+              alignItems: "center", 
+              justifyContent: "center", 
+              color: "#fff"
+            }}>
+              <FiTrendingUp size={20} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <span style={{ fontSize: "11px", fontWeight: "700", color: "#6B7280", textTransform: "uppercase", letterSpacing: "1px", display: "block", marginBottom: "6px" }}>
+                TOTAL PERMINTAAN
+              </span>
+              <h3 style={{ margin: 0, fontSize: "36px", fontWeight: "800", color: "#1F2937", lineHeight: 1 }}>
+                {customFurniture.length}
+              </h3>
+            </div>
+          </div>
+
+          {/* Status Grid */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "20px" }}>
+            {/* Paid Status */}
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              style={{ 
+                padding: "20px", 
+                borderRadius: "16px", 
+                background: "linear-gradient(135deg, #F0FDF4, #ECFDF5)",
+                border: "1px solid rgba(16, 185, 129, 0.15)"
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "14px" }}>
+                <div style={{ 
+                  width: "32px", 
+                  height: "32px", 
+                  background: "linear-gradient(135deg, #10B981, #34D399)", 
+                  borderRadius: "10px", 
+                  display: "flex", 
+                  alignItems: "center", 
+                  justifyContent: "center", 
+                  color: "#fff"
+                }}>
+                  <FiCheckCircle size={18} />
+                </div>
+                <span style={{ fontSize: "13px", fontWeight: "700", color: "#1F2937" }}>Lunas</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "baseline", gap: "8px", marginBottom: "12px" }}>
+                <h4 style={{ margin: 0, fontSize: "32px", fontWeight: "800", color: "#1F2937", lineHeight: 1 }}>
+                  {paidFurniture}
+                </h4>
+                <span style={{ fontSize: "13px", fontWeight: "700", color: "#6B7280" }}>
+                  {customFurniture.length > 0 ? ((paidFurniture / customFurniture.length) * 100).toFixed(0) : 0}%
+                </span>
+              </div>
+              <div style={{ width: "100%", height: "6px", background: "rgba(0,0,0,0.05)", borderRadius: "10px", overflow: "hidden" }}>
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${customFurniture.length > 0 ? (paidFurniture / customFurniture.length) * 100 : 0}%` }}
+                  transition={{ duration: 1, ease: "easeOut" }}
+                  style={{ 
+                    height: "100%", 
+                    background: "linear-gradient(90deg, #10B981, #34D399)", 
+                    borderRadius: "10px" 
+                  }}
+                />
+              </div>
+            </motion.div>
+
+            {/* Unpaid Status */}
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              style={{ 
+                padding: "20px", 
+                borderRadius: "16px", 
+                background: "linear-gradient(135deg, #FFFBEB, #FEF3C7)",
+                border: "1px solid rgba(245, 158, 11, 0.15)"
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "14px" }}>
+                <div style={{ 
+                  width: "32px", 
+                  height: "32px", 
+                  background: "linear-gradient(135deg, #F59E0B, #FBBF24)", 
+                  borderRadius: "10px", 
+                  display: "flex", 
+                  alignItems: "center", 
+                  justifyContent: "center", 
+                  color: "#fff"
+                }}>
+                  <FiClock size={18} />
+                </div>
+                <span style={{ fontSize: "13px", fontWeight: "700", color: "#1F2937" }}>Belum Lunas</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "baseline", gap: "8px", marginBottom: "12px" }}>
+                <h4 style={{ margin: 0, fontSize: "32px", fontWeight: "800", color: "#1F2937", lineHeight: 1 }}>
+                  {unpaidFurniture}
+                </h4>
+                <span style={{ fontSize: "13px", fontWeight: "700", color: "#6B7280" }}>
+                  {customFurniture.length > 0 ? ((unpaidFurniture / customFurniture.length) * 100).toFixed(0) : 0}%
+                </span>
+              </div>
+              <div style={{ width: "100%", height: "6px", background: "rgba(0,0,0,0.05)", borderRadius: "10px", overflow: "hidden" }}>
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${customFurniture.length > 0 ? (unpaidFurniture / customFurniture.length) * 100 : 0}%` }}
+                  transition={{ duration: 1, ease: "easeOut" }}
+                  style={{ 
+                    height: "100%", 
+                    background: "linear-gradient(90deg, #F59E0B, #FBBF24)", 
+                    borderRadius: "10px" 
+                  }}
+                />
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Alert Box */}
+          {unpaidFurniture > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              style={{ 
+                background: "linear-gradient(135deg, #FEF3C7, #FDE68A)", 
+                border: "1px solid rgba(245, 158, 11, 0.2)", 
+                borderRadius: "14px", 
+                padding: "16px", 
+                display: "flex", 
+                gap: "12px", 
+                alignItems: "flex-start" 
+              }}
+            >
+              <div style={{ fontSize: "24px", marginTop: "2px" }}>⚠️</div>
+              <div style={{ flex: 1 }}>
+                <p style={{ margin: "0 0 4px 0", fontSize: "14px", fontWeight: "700", color: "#92400E" }}>
+                  Perlu Tindak Lanjut
+                </p>
+                <p style={{ margin: 0, fontSize: "13px", color: "#B45309", lineHeight: 1.5 }}>
+                  Ada {unpaidFurniture} permintaan yang belum lunas
+                </p>
+              </div>
+            </motion.div>
+          )}
         </motion.div>
       </div>
     </motion.div>
