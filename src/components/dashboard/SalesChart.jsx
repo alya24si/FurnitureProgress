@@ -58,7 +58,7 @@ function SalesChart({ purchases, members = [], totalMembers, totalCustomers }) {
     };
     return parseDate(a) - parseDate(b);
   });
-  
+
   const values = labels.map(month => groupedData[month]);
 
   const totalSum = values.reduce((a, b) => a + b, 0);
@@ -68,7 +68,7 @@ function SalesChart({ purchases, members = [], totalMembers, totalCustomers }) {
   // ==========================================
   // ✅ LOGIKA BARU: PENDAPATAN MEMBER VS NON-MEMBER
   // ==========================================
-  
+
   // Pendapatan dari Member (total_spending dari tabel memberships)
   const memberRevenue = members.reduce((sum, member) => {
     return sum + Number(member.total_spending || 0);
@@ -77,11 +77,11 @@ function SalesChart({ purchases, members = [], totalMembers, totalCustomers }) {
   // Pendapatan dari Non-Member (purchases yang customer_id-nya TIDAK ada di members)
   const nonMemberRevenue = purchases.reduce((sum, purchase) => {
     // Cek apakah customer_id ini adalah member
-    const isMember = members.some(m => 
-      m.user_id === purchase.customer_id || 
+    const isMember = members.some(m =>
+      m.user_id === purchase.customer_id ||
       m.id === purchase.customer_id
     );
-    
+
     // Jika BUKAN member, tambahkan ke pendapatan non-member
     if (!isMember) {
       return sum + Number(purchase.total || 0);
@@ -134,7 +134,7 @@ function SalesChart({ purchases, members = [], totalMembers, totalCustomers }) {
       duration: 1500,
       easing: "easeOutQuart",
     },
-    plugins: { 
+    plugins: {
       legend: { display: false },
       tooltip: {
         backgroundColor: "rgba(255, 255, 255, 0.98)",
@@ -148,27 +148,27 @@ function SalesChart({ purchases, members = [], totalMembers, totalCustomers }) {
         titleFont: { family: "'Inter', sans-serif", size: 14, weight: "700" },
         bodyFont: { family: "'Inter', sans-serif", size: 13, weight: "600" },
         callbacks: {
-          title: function(context) {
+          title: function (context) {
             return context[0].label;
           },
-          label: function(context) {
+          label: function (context) {
             return `Total Omzet: Rp ${context.raw.toLocaleString("id-ID")}`;
           }
         }
       }
     },
     scales: {
-      x: { 
-        grid: { display: false, drawBorder: false }, 
-        ticks: { 
-          color: "#6B7280", 
+      x: {
+        grid: { display: false, drawBorder: false },
+        ticks: {
+          color: "#6B7280",
           font: { family: "'Inter', sans-serif", size: 12, weight: "600" },
           padding: 8
-        } 
+        }
       },
       y: {
-        grid: { 
-          color: "rgba(183, 110, 121, 0.08)", 
+        grid: {
+          color: "rgba(183, 110, 121, 0.08)",
           drawTicks: false,
           drawBorder: false,
         },
@@ -240,8 +240,8 @@ function SalesChart({ purchases, members = [], totalMembers, totalCustomers }) {
         bodyFont: { family: "'Inter', sans-serif", size: 13, weight: "600" },
         callbacks: {
           label: function (context) {
-            const percentage = totalUserRevenue > 0 
-              ? ((context.raw / totalUserRevenue) * 100).toFixed(1) 
+            const percentage = totalUserRevenue > 0
+              ? ((context.raw / totalUserRevenue) * 100).toFixed(1)
               : 0;
             return ` ${context.label}: Rp ${context.raw.toLocaleString("id-ID")} (${percentage}%)`;
           }
@@ -266,9 +266,9 @@ function SalesChart({ purchases, members = [], totalMembers, totalCustomers }) {
             </h4>
           </div>
         </div>
-        
+
         <div style={styles.statDivider}></div>
-        
+
         <div style={styles.statItem}>
           <div style={{ ...styles.statIconBox, background: "linear-gradient(135deg, #B76E79, #D4A574)" }}>
             <span style={styles.statIcon}>🏆</span>
@@ -280,9 +280,9 @@ function SalesChart({ purchases, members = [], totalMembers, totalCustomers }) {
             </h4>
           </div>
         </div>
-        
+
         <div style={styles.statDivider}></div>
-        
+
         <div style={styles.statItem}>
           <div style={{ ...styles.statIconBox, background: "linear-gradient(135deg, #D4A574, #F4D48A)" }}>
             <span style={styles.statIcon}>📅</span>
@@ -325,18 +325,24 @@ function SalesChart({ purchases, members = [], totalMembers, totalCustomers }) {
               </div>
             </div>
           </div>
+
+          {/* ✅ TOTAL REVENUE DIPINDAHKAN KE LUAR CHART */}
+          
+
+          <div style={styles.totalRevenueBox}>
+            <span style={styles.totalRevenueLabel}>Total Revenue</span>
+            <h3 style={styles.totalRevenueValue}>
+              {totalUserRevenue >= 1000000000
+                ? `Rp ${(totalUserRevenue / 1000000000).toFixed(1)} M`
+                : totalUserRevenue >= 1000000
+                  ? `Rp ${(totalUserRevenue / 1000000).toFixed(1)} Jt`
+                  : `Rp ${totalUserRevenue.toLocaleString("id-ID")}`
+              }
+            </h3>
+          </div>
+
           <div style={styles.doughnutWrapper}>
             <Doughnut data={doughnutData} options={doughnutOptions} />
-            {/* ✅ Center Text - Total Revenue */}
-            <div style={styles.doughnutCenter}>
-              <span style={styles.doughnutLabel}>Total Revenue</span>
-              <span style={styles.doughnutValue}>
-                Rp {totalUserRevenue >= 1000000 
-                  ? (totalUserRevenue / 1000000).toFixed(1) + " Jt"
-                  : totalUserRevenue.toLocaleString("id-ID")
-                }
-              </span>
-            </div>
           </div>
         </div>
       </div>
@@ -352,7 +358,7 @@ const styles = {
     boxShadow: "0 10px 40px rgba(183, 110, 121, 0.08)",
     border: "1px solid rgba(183, 110, 121, 0.1)",
   },
-  
+
   // STATS BAR
   statsBar: {
     display: "flex",
@@ -362,7 +368,7 @@ const styles = {
     borderBottom: "2px solid rgba(183, 110, 121, 0.1)",
     flexWrap: "wrap",
   },
-  
+
   statItem: {
     display: "flex",
     alignItems: "center",
@@ -370,7 +376,7 @@ const styles = {
     flex: "1",
     minWidth: "200px",
   },
-  
+
   statIconBox: {
     width: "56px",
     height: "56px",
@@ -382,11 +388,11 @@ const styles = {
     boxShadow: "0 8px 20px rgba(183, 110, 121, 0.25)",
     flexShrink: 0,
   },
-  
+
   statIcon: {
     fontSize: "24px",
   },
-  
+
   statLabel: {
     fontSize: "12px",
     color: "#6B7280",
@@ -396,7 +402,7 @@ const styles = {
     marginBottom: "6px",
     display: "block",
   },
-  
+
   statValue: {
     margin: 0,
     fontSize: "20px",
@@ -404,20 +410,20 @@ const styles = {
     color: "#1F2937",
     letterSpacing: "-0.5px",
   },
-  
+
   statDivider: {
     width: "1px",
     background: "linear-gradient(to bottom, transparent, rgba(183, 110, 121, 0.3), transparent)",
     display: "none",
   },
-  
+
   // CHART GRID
   chartGrid: {
     display: "grid",
     gridTemplateColumns: "2fr 1fr",
     gap: "30px",
   },
-  
+
   chartCard: {
     background: "#FFFFFF",
     borderRadius: "20px",
@@ -425,7 +431,7 @@ const styles = {
     boxShadow: "0 4px 20px rgba(183, 110, 121, 0.06)",
     border: "1px solid rgba(183, 110, 121, 0.08)",
   },
-  
+
   chartCardSecondary: {
     background: "#FFFFFF",
     borderRadius: "20px",
@@ -435,22 +441,22 @@ const styles = {
     display: "flex",
     flexDirection: "column",
   },
-  
+
   chartHeader: {
     marginBottom: "24px",
   },
-  
+
   chartTitleBox: {
     display: "flex",
     alignItems: "flex-start",
     gap: "12px",
   },
-  
+
   chartIcon: {
     fontSize: "28px",
     marginTop: "2px",
   },
-  
+
   chartTitle: {
     margin: "0 0 4px 0",
     fontSize: "16px",
@@ -458,19 +464,19 @@ const styles = {
     color: "#1F2937",
     letterSpacing: "-0.3px",
   },
-  
+
   chartSubtitle: {
     margin: 0,
     fontSize: "13px",
     color: "#6B7280",
     fontWeight: "500",
   },
-  
+
   chartBody: {
     height: "300px",
     position: "relative",
   },
-  
+
   doughnutWrapper: {
     position: "relative",
     height: "280px",
@@ -478,32 +484,38 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
   },
-  
-  doughnutCenter: {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
+
+  // ✅ STYLE BARU: TOTAL REVENUE BOX (DI LUAR CHART)
+  totalRevenueBox: {
+    background: "linear-gradient(135deg, #FDF2F4, #F6E8EB)",
+    padding: "20px",
+    borderRadius: "16px",
     textAlign: "center",
-    pointerEvents: "none",
+    marginBottom: "20px",
+    border: "1px solid rgba(183, 110, 121, 0.15)",
+    boxShadow: "0 4px 12px rgba(183, 110, 121, 0.08)",
   },
-  
-  doughnutLabel: {
+
+  totalRevenueLabel: {
     display: "block",
     fontSize: "12px",
     color: "#6B7280",
     fontWeight: "600",
     textTransform: "uppercase",
     letterSpacing: "1px",
-    marginBottom: "4px",
+    marginBottom: "8px",
   },
-  
-  doughnutValue: {
-    display: "block",
-    fontSize: "24px",
+
+  totalRevenueValue: {
+    margin: 0,
+    fontSize: "28px",
     fontWeight: "800",
     color: "#1F2937",
-    letterSpacing: "-1px",
+    letterSpacing: "-0.5px",
+    background: "linear-gradient(135deg, #B76E79, #D4A574)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    backgroundClip: "text",
   },
 };
 
