@@ -112,7 +112,7 @@ const HeaderSection = () => {
                   color: isActive('/custom-furniture') ? '#6E39CB' : 'var(--text-dark)',
                 }}
               >
-                🎨 Custom Furniture
+                Custom Furniture
               </Link>
             </li>
 
