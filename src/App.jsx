@@ -12,7 +12,10 @@ import ErrorBoundary from './components/ErrorBoundary';
 
 import ProductCRM from "./pages/admin/ProductCRM";
 import Cart from "./pages/guest/Cart";
-import GuestCheckout from "./pages/guest/GuestCheckout"; // ✅ Import GuestCheckout
+import GuestCheckout from "./pages/guest/GuestCheckout";
+
+// ✅ Import CustomFurnitureGuest
+import CustomFurnitureGuest from "./pages/guest/CustomFurnitureGuest";
 
 // =====================
 // Guest Pages
@@ -126,10 +129,6 @@ const NotFound = React.lazy(() =>
   import('./pages/NotFound')
 );
 
-const CustomFurnitureCustomer = React.lazy(() =>
-  import('./pages/guest/CustomFurnitureCustomer')
-);
-
 const CustomFurnitureAdmin = React.lazy(() =>
   import('./pages/admin/CustomFurnitureAdmin')
 );
@@ -190,7 +189,9 @@ function App() {
               <Route path="privacy-policy" element={<PrivacyPolicy />} />
               <Route path="discount-claim" element={<DiscountClaim />} />
               <Route path="membership-form" element={<MembershipForm />} />
-              <Route path="custom-furniture" element={<CustomFurnitureCustomer />} />
+              
+              {/* ✅ Route untuk Customer Custom Furniture */}
+              <Route path="custom-furniture" element={<CustomFurnitureGuest />} />
               
               {/* ✅ ROUTE GUEST CHECKOUT & CART */}
               <Route path="cart" element={<Cart />} />
@@ -210,7 +211,7 @@ function App() {
             </Route>
 
             {/* ===================== */}
-            {/* MEMBER */}
+            {/* MEMBER - TANPA CUSTOM FURNITURE */}
             {/* ===================== */}
             <Route element={<MemberLayout />}>
               <Route path="/member/dashboard" element={<MemberDashboard />} />
@@ -220,6 +221,7 @@ function App() {
               <Route path="/member/history" element={<MemberHistory />} />
               <Route path="/member/profile" element={<MemberProfile />} />
               <Route path="/checkout" element={<Checkout />} />
+              {/* ✅ TIDAK ADA route custom-furniture disini */}
             </Route>
 
             {/* ===================== */}

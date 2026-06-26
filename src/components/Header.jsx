@@ -5,7 +5,7 @@ import {
   FiShoppingCart,
   FiLogOut
 } from 'react-icons/fi';
-import { Link, useNavigate, useLocation } from 'react-router-dom'; // ✅ TAMBAHKAN useLocation
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Header from '../Reusable/Header';
 import Container from '../Reusable/Container';
 import Cart from '../Reusable/Cart';
@@ -13,12 +13,11 @@ import { supabase } from '../services/supabase';
 
 const HeaderSection = () => {
   const navigate = useNavigate();
-  const location = useLocation(); // ✅ TAMBAHKAN INI untuk deteksi halaman aktif
+  const location = useLocation();
   const [showCart, setShowCart] = useState(false);
   const [customer, setCustomer] = useState(null);
   const [cartCount, setCartCount] = useState(0);
 
-  // ✅ TAMBAHKAN useEffect untuk cek login status
   useEffect(() => {
     const storedCustomer = localStorage.getItem("customer");
     if (storedCustomer) {
@@ -29,7 +28,6 @@ const HeaderSection = () => {
     setCartCount(cart.length);
   }, []);
 
-  // ✅ TAMBAHKAN fungsi logout
   const handleLogout = async () => {
     if (!confirm("Yakin ingin logout?")) return;
 
@@ -53,7 +51,6 @@ const HeaderSection = () => {
     }
   };
 
-  // ✅ FUNGSI BARU: Cek apakah menu aktif
   const isActive = (path) => {
     return location.pathname === path;
   };
@@ -84,8 +81,8 @@ const HeaderSection = () => {
                 to="/"
                 style={{
                   ...styles.navLink,
-                  fontWeight: isActive('/') ? 700 : 400, // ✅ DINAMIS
-                  color: isActive('/') ? '#6E39CB' : 'var(--text-dark)', // ✅ DINAMIS
+                  fontWeight: isActive('/') ? 700 : 400,
+                  color: isActive('/') ? '#6E39CB' : 'var(--text-dark)',
                 }}
               >
                 Beranda
@@ -97,11 +94,25 @@ const HeaderSection = () => {
                 to="/products"
                 style={{
                   ...styles.navLink,
-                  fontWeight: isActive('/products') ? 700 : 400, // ✅ DINAMIS
-                  color: isActive('/products') ? '#6E39CB' : 'var(--text-dark)', // ✅ DINAMIS
+                  fontWeight: isActive('/products') ? 700 : 400,
+                  color: isActive('/products') ? '#6E39CB' : 'var(--text-dark)',
                 }}
               >
                 Produk
+              </Link>
+            </li>
+
+            {/* ✅ PERBAIKAN: SELALU ke /custom-furniture */}
+            <li>
+              <Link
+                to="/custom-furniture"
+                style={{
+                  ...styles.navLink,
+                  fontWeight: isActive('/custom-furniture') ? 700 : 400,
+                  color: isActive('/custom-furniture') ? '#6E39CB' : 'var(--text-dark)',
+                }}
+              >
+                🎨 Custom Furniture
               </Link>
             </li>
 
@@ -110,8 +121,8 @@ const HeaderSection = () => {
                 to="/about"
                 style={{
                   ...styles.navLink,
-                  fontWeight: isActive('/about') ? 700 : 400, // ✅ DINAMIS
-                  color: isActive('/about') ? '#6E39CB' : 'var(--text-dark)', // ✅ DINAMIS
+                  fontWeight: isActive('/about') ? 700 : 400,
+                  color: isActive('/about') ? '#6E39CB' : 'var(--text-dark)',
                 }}
               >
                 Tentang Kami
@@ -123,8 +134,8 @@ const HeaderSection = () => {
                 to="/contact"
                 style={{
                   ...styles.navLink,
-                  fontWeight: isActive('/contact') ? 700 : 400, // ✅ DINAMIS
-                  color: isActive('/contact') ? '#6E39CB' : 'var(--text-dark)', // ✅ DINAMIS
+                  fontWeight: isActive('/contact') ? 700 : 400,
+                  color: isActive('/contact') ? '#6E39CB' : 'var(--text-dark)',
                 }}
               >
                 Kontak
@@ -274,15 +285,17 @@ const styles = {
 
   navList: {
     display: 'flex',
-    gap: '40px',
-    listStyle: 'none'
+    gap: '30px',
+    listStyle: 'none',
+    margin: 0,
+    padding: 0,
   },
 
   navLink: {
     color: 'var(--text-dark)',
-    fontSize: '16px',
+    fontSize: '15px',
     textDecoration: 'none',
-    transition: 'all 0.2s', // ✅ Smooth transition
+    transition: 'all 0.2s',
   },
 
   icons: {
